@@ -5,9 +5,9 @@ const ResumeReader = () => {
   const [image, setImage] = useState(null);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState(0); // Progress state
+  const [progress, setProgress] = useState(0);
+  const [questions, setQuestions] = useState([]); // Store generated questions
 
-  // Handle file selection
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -16,7 +16,6 @@ const ResumeReader = () => {
     }
   };
 
-  // Perform OCR with progress tracking
   const extractText = (file) => {
     setLoading(true);
     setProgress(0);
@@ -24,18 +23,38 @@ const ResumeReader = () => {
     Tesseract.recognize(file, "eng", {
       logger: (m) => {
         if (m.status === "recognizing text") {
-          setProgress(Math.floor(m.progress * 100)); // Update progress
+          setProgress(Math.floor(m.progress * 100));
         }
       },
     })
       .then(({ data: { text } }) => {
         setText(text);
         setLoading(false);
+        sendToBackend(text);
       })
       .catch((error) => {
         console.error("OCR Error:", error);
         setLoading(false);
       });
+  };
+
+  const sendToBackend = async (extractedText) => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/generate-questions/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ resume_text: extractedText }),
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch");
+
+      const data = await response.json();
+      setQuestions(data.questions);
+    } catch (error) {
+      console.error("Backend Error:", error);
+    }
   };
 
   return (
@@ -44,17 +63,11 @@ const ResumeReader = () => {
       <label htmlFor="file-upload" style={styles.fileLabel}>
         <span style={styles.fileButton}>Choose File</span>
       </label>
-      <input
-        id="file-upload"
-        type="file"
-        accept="image/*"
-        onChange={handleImageUpload}
-        style={styles.input}
-      />
+      <input id="file-upload" type="file" accept="image/*" onChange={handleImageUpload} style={styles.input} />
 
       {image && (
         <div style={styles.imageContainer}>
-          <img src={image} alt="Uploaded Prescription" style={styles.image} />
+          <img src={image} alt="Uploaded Resume" style={styles.image} />
         </div>
       )}
 
@@ -71,107 +84,21 @@ const ResumeReader = () => {
           <p style={styles.text}>{text}</p>
         </div>
       )}
+
+      {questions.length > 0 && (
+        <div style={styles.textContainer}>
+          <h3 style={styles.textTitle}>Generated Questions:</h3>
+          <ul>
+            {questions.map((q, index) => (
+              <li key={index} style={styles.text}>{q}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
 
-// Styling with animations
-const styles = {
-  container: {
-    textAlign: "center",
-    padding: "30px",
-    maxWidth: "600px",
-    margin: "auto",
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    backgroundColor: "#ffffff",
-    borderRadius: "15px",
-    boxShadow: "0 8px 20px rgba(0, 0, 0, 0.15)",
-    transition: "all 0.3s ease-in-out",
-  },
-  header: {
-    fontSize: "24px",
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: "20px",
-    textTransform: "uppercase",
-  },
-  fileLabel: {
-    display: "inline-block",
-    cursor: "pointer",
-    backgroundColor: "#4CAF50",
-    padding: "12px 24px",
-    borderRadius: "8px",
-    color: "#fff",
-    fontSize: "16px",
-    fontWeight: "bold",
-    transition: "background-color 0.3s, transform 0.3s",
-  },
-  fileButton: {
-    padding: "10px 20px",
-    backgroundColor: "#4CAF50",
-    borderRadius: "8px",
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: "16px",
-    transition: "background-color 0.3s, transform 0.3s",
-    cursor: "pointer",
-  },
-  input: {
-    display: "none", // Hide the default file input
-  },
-  imageContainer: {
-    marginTop: "20px",
-    padding: "15px",
-    borderRadius: "12px",
-    backgroundColor: "#f3f3f3",
-    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-    transition: "all 0.3s ease-in-out",
-  },
-  image: {
-    maxWidth: "100%",
-    height: "auto",
-    borderRadius: "12px",
-  },
-  progressBarContainer: {
-    marginTop: "30px",
-    width: "100%",
-    backgroundColor: "#ddd",
-    borderRadius: "8px",
-    overflow: "hidden",
-  },
-  progressText: {
-    fontSize: "16px",
-    marginBottom: "10px",
-    color: "#4caf50",
-    fontWeight: "bold",
-  },
-  progressBar: {
-    height: "10px",
-    backgroundColor: "#4caf50",
-    transition: "width 0.3s ease-in-out",
-  },
-  textContainer: {
-    marginTop: "30px",
-    padding: "20px",
-    border: "1px solid #ddd",
-    borderRadius: "12px",
-    backgroundColor: "#fafafa",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    textAlign: "left",
-    fontSize: "16px",
-    color: "#333",
-    lineHeight: "1.6",
-  },
-  textTitle: {
-    fontSize: "20px",
-    fontWeight: "bold",
-    marginBottom: "15px",
-    color: "#333",
-  },
-  text: {
-    fontSize: "16px",
-    color: "#555",
-  },
-};
+const styles = { /* (Your existing styles) */ };
 
 export default ResumeReader;
