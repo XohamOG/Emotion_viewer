@@ -1,0 +1,65 @@
+/* Full-screen landing container */
+.landing-container {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Overlay to ensure content is visible over 3D background */
+.overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: rgb(60, 141, 155);
+  z-index: 2;
+}
+
+.overlay h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.overlay p {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+/* Button container */
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* Button Styles */
+.btn {
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  font-weight: bold;
+  color: rgb(255, 255, 255);
+}
+
+/* Button Colors */
+.patient {
+  background-color: #ff6b6b;
+}
+.caretaker {
+  background-color: #ffb142;
+}
+.doctor {
+  background-color: #1dd1a1;
+}
+
+/* Hover Effects */
+.btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+}

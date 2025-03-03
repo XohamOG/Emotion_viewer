@@ -1,0 +1,21 @@
+[
+    { "medicationName": "Aspirin", "status": "taken" },
+    { "medicationName": "Vitamin D", "status": "missed" },
+    { "medicationName": "Paracetamol", "status": "taken" },
+    { "medicationName": "Antibiotics", "status": "missed" },
+    { "medicationName": "Metformin", "status": "taken" },
+    { "medicationName": "Ibuprofen", "status": "missed" },
+    { "medicationName": "Levothyroxine", "status": "taken" },
+    { "medicationName": "Cough Syrup", "status": "missed" },
+    { "medicationName": "Amoxicillin", "status": "taken" },
+    { "medicationName": "Blood Pressure Meds", "status": "missed" },
+    { "medicationName": "Cholesterol Meds", "status": "taken" },
+    { "medicationName": "Painkillers", "status": "missed" },
+    { "medicationName": "Antidepressants", "status": "taken" },
+    { "medicationName": "Insulin", "status": "missed" },
+    { "medicationName": "Allergy Medicine", "status": "taken" },
+    { "medicationName": "Parac", "status": "missed" },
+    { "medicationName": "Parac2", "status": "missed" },
+    { "medicationName": "Parac3", "status": "missed" }
+    
+]

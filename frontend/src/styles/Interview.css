@@ -1,0 +1,135 @@
+/* General styles */
+.medicine-form-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .page-content button {
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    background-color: #3498db;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin: 15px;
+  }
+  
+  .page-content button:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+  }
+  
+  .page-content button:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.6);
+  }
+  
+  .page-content button:active {
+    background-color: #1d6fa5;
+    transform: scale(0.98);
+    margin-bottom: 40px;
+  }
+  
+  .header {
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .medicine-form label {
+    font-size: 16px;
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+  }
+  
+  .input-field,
+  .textarea-field {
+    width: 95%;
+    padding: 12px;
+    margin-bottom: 18px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    background-color: #f1f1f1;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .input-field:focus,
+  .textarea-field:focus {
+    border: 1px solid #3498db;
+    background-color: #e8f0fe;
+  }
+  
+  .submit-btn {
+    width: 100%;
+    padding: 16px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .submit-btn:hover {
+    background-color: #2980b9;
+  }
+  
+  /* Modal styles */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-content {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .modal-content h4 {
+    font-size: 20px;
+    color: #333;
+  }
+  
+  .modal-content p {
+    font-size: 16px;
+    color: #777;
+  }
+  
+  .close-btn {
+    padding: 10px 20px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .close-btn:hover {
+    background-color: #c0392b;
+  }
+  

@@ -1,0 +1,91 @@
+/* Sidebar Styling */
+.sidebar {
+  width: 215px;
+  height: 100vh;
+  background: #FF8C42; /* Warm Orange */
+  color: #FFF3E0; /* Light Cream */
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  transition: transform 0.3s ease-in-out;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Logo Container */
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Logo Image */
+.logo {
+  width: 200px;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Sidebar Links */
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar ul li {
+  margin: 20px 0;
+}
+
+.sidebar ul li a {
+  text-decoration: none;
+  color: #FFF3E0; /* Light Cream */
+  font-size: 1.2rem;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+/* Icons */
+.icon {
+  margin-right: 12px;
+  width: 22px;
+  height: 22px;
+}
+
+/* Hover Effect */
+.sidebar ul li a:hover {
+  background: #D2691E; /* Darker Orange */
+  color: #FFF3E0;
+  transform: translateX(8px);
+}
+
+/* Sidebar Animation */
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.sidebar {
+  animation: slideIn 0.5s ease-in-out;
+}
+
+/* Responsive Sidebar */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  .sidebar ul li a {
+    font-size: 1rem;
+  }
+}

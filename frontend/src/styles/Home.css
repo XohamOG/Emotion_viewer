@@ -1,0 +1,99 @@
+/* Full-screen container */
+.home-container {
+  position: relative;
+  height: 87vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #EAEAEA; /* Keep this as the background */
+}
+
+/* Ensuring Spline fills the screen */
+.spline-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff; /* Set the background of the Spline canvas to bright white */
+  z-index: -1; /* Ensure it stays behind the overlay text */
+}
+
+/* Ensuring Spline canvas has a bright white background */
+.spline-wrapper canvas {
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff; /* Set the canvas background to bright white */
+  object-fit: cover; /* Ensures it fills the space properly */
+}
+
+/* Overlay text styling */
+.overlay-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #EAEAEA;
+  font-family: "Poppins", sans-serif;
+  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.5); /* Dark glassmorphism effect */
+  padding: 25px 40px;
+  border-radius: 12px;
+  width: 55%;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 1s ease-in-out;
+}
+
+/* Heading styles */
+.overlay-text h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.overlay-text h2 {
+  font-size: 2rem;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #ffcc00;
+}
+
+.overlay-text p {
+  font-size: 1.5rem;
+  font-weight: 300;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translate(-50%, -55%);
+  }
+  to {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+  }
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .overlay-text {
+      width: 80%;
+      padding: 20px;
+  }
+
+  .overlay-text h1 {
+      font-size: 2rem;
+  }
+
+  .overlay-text h2 {
+      font-size: 1.5rem;
+  }
+
+  .overlay-text p {
+      font-size: 1rem;
+  }
+}

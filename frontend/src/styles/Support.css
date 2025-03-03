@@ -1,0 +1,86 @@
+/* Basic container styling */
+.support-container {
+    padding: 20px;
+    background-color: #f8f9fa;
+    text-align: center;
+    max-width: 800px;
+    margin: auto;
+    border-radius: 8px;
+  }
+  
+  /* Title styling */
+  .support-container h2 {
+    color: #343a40;
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
+  
+  /* Cards container */
+  .contact-cards {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  
+  /* Individual card styling */
+  .contact-card {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: calc(50% - 10px); /* Adjusts the width for 2 columns */
+    text-align: left;
+    color: #495057;
+  }
+  
+  .contact-card h3 {
+    color: #007bff;
+    font-size: 1.5em;
+    margin-bottom: 10px;
+  }
+  
+  .contact-card p {
+    font-size: 1em;
+    margin: 5px 0;
+  }
+  
+  .contact-card p strong {
+    font-weight: bold;
+  }
+  
+  /* Buttons container */
+  .contact-buttons {
+    margin-top: 15px;
+  }
+  
+  .contact-btn {
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 5px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .call-btn {
+    background-color: #28a745; /* Green for Call */
+  }
+  
+  .mail-btn {
+    background-color: #007bff; /* Blue for Mail */
+  }
+  
+  .contact-btn:hover {
+    opacity: 0.8;
+  }
+  
+  /* Responsive styles for smaller screens */
+  @media (max-width: 768px) {
+    .contact-card {
+      width: 100%; /* Stacks the cards on smaller screens */
+    }
+  }
+  

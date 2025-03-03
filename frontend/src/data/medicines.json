@@ -1,0 +1,28 @@
+[
+  {
+    "ID": "paracetamol_10mg",
+    "Name": "Paracetamol 10mg",
+    "Dosage": "10mg",
+    "Frequency": "2x daily",
+    "StartDate": "2025-03-01",
+    "EndDate": "2025-06-01",
+    "Instructions": "Take with water every 6 hours",
+    "PatientID": "patient1",
+    "DoctorID": "doctor1",
+    "Status": "active",
+    "ImageURL": "/assets/brexodol-tab-600x450.webp" 
+  },
+  {
+    "ID": "ibuprofen_200mg",
+    "Name": "Ibuprofen 200mg",
+    "Dosage": "200mg",
+    "Frequency": "3x daily",
+    "StartDate": "2025-03-01",
+    "EndDate": "2025-06-01",
+    "Instructions": "Take with food",
+    "PatientID": "patient1",
+    "DoctorID": "doctor2",
+    "Status": "active",
+    "ImageURL": "/assets/ibuprofen-400-mg-bp-tablets-500x500.webp"
+  }
+]

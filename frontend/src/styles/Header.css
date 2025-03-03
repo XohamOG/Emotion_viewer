@@ -1,0 +1,62 @@
+/* Header styling */
+.header {
+  background: linear-gradient(135deg, #FF8C42, #D2691E); /* Orange gradient */
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  padding: 15px 30px;
+  font-size: 22px;
+  font-weight: bold;
+  gap: 15px;
+  color: #ffffff !important; /* Light cream text for contrast */
+  border-bottom: 3px solid #FFF3E0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Title styling */
+.header-title {
+  font-size: 28px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  margin-right: 20px;
+  text-align: right;
+}
+
+/* User icon styling */
+.user-icon {
+  margin-top: 10px;
+  font-size: 60px;
+  cursor: pointer;
+  transition: transform 0.3s ease, color 0.3s ease, font-size 0.3s ease;
+}
+
+.user-icon:hover {
+  transform: scale(1.2);
+  color: #FFD700; /* Gold hover color */
+  font-size: 45px;
+}
+
+/* Left icons (notification & translation) */
+.left-icons {
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.icon {
+  cursor: pointer;
+  font-size: 40px;
+  transition: color 0.3s ease;
+}
+
+.icon:hover {
+  color: #FFD700; /* Gold hover effect */
+}
+
+/* Move notification & translate icons to the right */
+.right-icons {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
