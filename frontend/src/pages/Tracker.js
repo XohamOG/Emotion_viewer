@@ -178,7 +178,7 @@ const InterviewPage = () => {
       mediaRecorderRef.current.start();
       setTimeout(() => {
         mediaRecorderRef.current.stop();
-      }, 3000);
+      }, 5000);
     } catch (error) {
       console.error("❌ Error starting MediaRecorder:", error);
     }
