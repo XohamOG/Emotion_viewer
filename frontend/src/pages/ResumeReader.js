@@ -1,87 +1,66 @@
 import React, { useState } from "react";
-import Tesseract from "tesseract.js";
 
 const ResumeReader = () => {
-  const [image, setImage] = useState(null);
-  const [text, setText] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [questions, setQuestions] = useState([]); // Store generated questions
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [questions, setQuestions] = useState([]);
 
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setImage(URL.createObjectURL(file));
-      extractText(file);
+  const handleFileUpload = (event) => {
+    const uploadedFile = event.target.files[0];
+    if (uploadedFile && uploadedFile.type === "application/pdf") {
+      setFile(uploadedFile);
+    } else {
+      alert("Only PDF files are allowed!");
+      setFile(null);
     }
   };
 
-  const extractText = (file) => {
-    setLoading(true);
-    setProgress(0);
+  const handleSubmit = async () => {
+    if (!file) {
+      alert("Please upload a resume first.");
+      return;
+    }
 
-    Tesseract.recognize(file, "eng", {
-      logger: (m) => {
-        if (m.status === "recognizing text") {
-          setProgress(Math.floor(m.progress * 100));
-        }
-      },
-    })
-      .then(({ data: { text } }) => {
-        setText(text);
-        setLoading(false);
-        sendToBackend(text);
-      })
-      .catch((error) => {
-        console.error("OCR Error:", error);
-        setLoading(false);
-      });
-  };
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("resume", file);
 
-  const sendToBackend = async (extractedText) => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/generate-questions/", {
+      const response = await fetch("http://127.0.0.1:8000/api/upload-resume/", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ resume_text: extractedText }),
+        body: formData,
       });
 
-      if (!response.ok) throw new Error("Failed to fetch");
+      if (!response.ok) throw new Error("Upload failed!");
 
       const data = await response.json();
       setQuestions(data.questions);
     } catch (error) {
-      console.error("Backend Error:", error);
+      console.error("Error:", error);
+    } finally {
+      setUploading(false);
     }
   };
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.header}>📄 Resume Reader</h2>
-      <label htmlFor="file-upload" style={styles.fileLabel}>
-        <span style={styles.fileButton}>Choose File</span>
+      <h2 style={styles.header}>📄 Resume Uploader</h2>
+
+      <label style={styles.fileLabel}>
+        Select Resume (PDF)
+        <input type="file" accept=".pdf" onChange={handleFileUpload} style={styles.input} />
       </label>
-      <input id="file-upload" type="file" accept="image/*" onChange={handleImageUpload} style={styles.input} />
 
-      {image && (
-        <div style={styles.imageContainer}>
-          <img src={image} alt="Uploaded Resume" style={styles.image} />
-        </div>
-      )}
+      {file && <p style={styles.fileName}>Selected File: {file.name}</p>}
 
-      {loading && (
+      <button onClick={handleSubmit} style={styles.fileButton} disabled={uploading}>
+        {uploading ? "Uploading..." : "Upload & Generate Questions"}
+      </button>
+
+      {uploading && (
         <div style={styles.progressBarContainer}>
-          <p style={styles.progressText}>Processing: {progress}%</p>
-          <div style={{ ...styles.progressBar, width: `${progress}%` }} />
-        </div>
-      )}
-
-      {text && (
-        <div style={styles.textContainer}>
-          <h3 style={styles.textTitle}>Extracted Text:</h3>
-          <p style={styles.text}>{text}</p>
+          <p style={styles.progressText}>Uploading...</p>
+          <div style={{ ...styles.progressBar, width: "50%" }}></div>
         </div>
       )}
 
@@ -99,6 +78,90 @@ const ResumeReader = () => {
   );
 };
 
-const styles = { /* (Your existing styles) */ };
+const styles = {
+  container: {
+    textAlign: "center",
+    padding: "30px",
+    maxWidth: "600px",
+    margin: "auto",
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    backgroundColor: "#ffffff",
+    borderRadius: "15px",
+    boxShadow: "0 8px 20px rgba(0, 0, 0, 0.15)",
+    transition: "all 0.3s ease-in-out",
+  },
+  header: {
+    fontSize: "24px",
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: "20px",
+    textTransform: "uppercase",
+  },
+  fileLabel: {
+    display: "inline-block",
+    cursor: "pointer",
+    backgroundColor: "#4CAF50",
+    padding: "12px 24px",
+    borderRadius: "8px",
+    color: "#fff",
+    fontSize: "16px",
+    fontWeight: "bold",
+    transition: "background-color 0.3s, transform 0.3s",
+  },
+  fileButton: {
+    padding: "10px 20px",
+    backgroundColor: "#4CAF50",
+    borderRadius: "8px",
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: "16px",
+    transition: "background-color 0.3s, transform 0.3s",
+    cursor: "pointer",
+    marginTop: "10px",
+  },
+  input: {
+    display: "none",
+  },
+  progressBarContainer: {
+    marginTop: "30px",
+    width: "100%",
+    backgroundColor: "#ddd",
+    borderRadius: "8px",
+    overflow: "hidden",
+  },
+  progressText: {
+    fontSize: "16px",
+    marginBottom: "10px",
+    color: "#4caf50",
+    fontWeight: "bold",
+  },
+  progressBar: {
+    height: "10px",
+    backgroundColor: "#4caf50",
+    transition: "width 0.3s ease-in-out",
+  },
+  textContainer: {
+    marginTop: "30px",
+    padding: "20px",
+    border: "1px solid #ddd",
+    borderRadius: "12px",
+    backgroundColor: "#fafafa",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    textAlign: "left",
+    fontSize: "16px",
+    color: "#333",
+    lineHeight: "1.6",
+  },
+  textTitle: {
+    fontSize: "20px",
+    fontWeight: "bold",
+    marginBottom: "15px",
+    color: "#333",
+  },
+  text: {
+    fontSize: "16px",
+    color: "#555",
+  },
+};
 
 export default ResumeReader;
