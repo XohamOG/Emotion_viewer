@@ -6,7 +6,7 @@ router = DefaultRouter()
 router.register(r'jobs', JobPositionViewSet)
 
 urlpatterns = [
-    path("api/", include(router.urls)),
-    path("api/interviews/start/", start_interview),
-    path("api/interviews/upload/", upload_captured_data),
+    path("", include(router.urls)),
+    path("interviews/start/", start_interview),
+    path("interviews/upload/", upload_captured_data),
 ]

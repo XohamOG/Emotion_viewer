@@ -4,7 +4,7 @@ from .models import JobPosition, InterviewSession, CapturedData
 class JobPositionSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobPosition
-        fields = "__all__"
+        fields = "__all__"  # Automatically includes 'title' and 'description'
 
 class InterviewSessionSerializer(serializers.ModelSerializer):
     class Meta:

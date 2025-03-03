@@ -1,6 +1,4 @@
-from django.shortcuts import render
-
-# Create your views here.
+import random
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -34,3 +32,25 @@ def upload_captured_data(request):
     captured_data = CapturedData.objects.create(interview=interview, file=file, data_type=data_type)
 
     return Response({"message": "File uploaded", "file_url": captured_data.file.url})
+
+@api_view(["POST"])
+def upload_captured_data(request):
+    interview_id = request.data.get("interview_id")
+    file = request.FILES.get("file")
+    data_type = request.data.get("data_type")
+
+    if not interview_id or not file or not data_type:
+        return Response({"error": "Missing fields"}, status=status.HTTP_400_BAD_REQUEST)
+
+    interview = InterviewSession.objects.get(id=interview_id)
+    captured_data = CapturedData.objects.create(interview=interview, file=file, data_type=data_type)
+
+    # Fix random.choice issue
+    emotions = ["Happy", "Sad", "Angry", "Neutral"]
+    detected_emotion = random.choice(emotions)  # Ensure random is imported correctly
+
+    return Response({
+        "message": "File uploaded",
+        "file_url": captured_data.file.url,
+        "emotion": detected_emotion
+    })
