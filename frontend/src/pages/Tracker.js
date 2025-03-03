@@ -7,7 +7,8 @@ const InterviewPage = () => {
   const [newJobDescription, setNewJobDescription] = useState("");
   const [screenStream, setScreenStream] = useState(null);
   const videoRef = useRef(null);
-  let captureIntervalRef = useRef(null);
+  const captureIntervalRef = useRef(null);
+  let mediaRecorderRef = useRef(null);
 
   useEffect(() => {
     fetchJobs();
@@ -54,7 +55,7 @@ const InterviewPage = () => {
 
       const stream = await navigator.mediaDevices.getDisplayMedia({
         video: { frameRate: 1 },
-        audio: { echoCancellation: true, noiseSuppression: true }, // Improved audio capture
+        audio: { echoCancellation: true, noiseSuppression: true },
       });
 
       stream.getVideoTracks()[0].onended = () => stopCapturing(); // Detect manual stop
@@ -65,17 +66,14 @@ const InterviewPage = () => {
         videoRef.current.muted = true;
       }
 
-      // **Wait for stream to be set before starting capture**
-      setTimeout(() => {
-        startCapturing();
-      }, 1000);
+      setTimeout(() => startCapturing(stream), 1000); // Ensure stream is fully set before starting
     } catch (err) {
       console.error("Error starting screen share:", err);
     }
   };
 
-  const startCapturing = () => {
-    if (!screenStream) {
+  const startCapturing = (stream) => {
+    if (!stream) {
       console.error("❌ Screen stream not set.");
       return;
     }
@@ -83,8 +81,8 @@ const InterviewPage = () => {
     if (captureIntervalRef.current) clearInterval(captureIntervalRef.current);
 
     captureIntervalRef.current = setInterval(() => {
-      captureScreenshot();
-      captureAudioClip();
+      captureScreenshot(stream);
+      captureAudioClip(stream);
     }, 3000);
   };
 
@@ -102,13 +100,13 @@ const InterviewPage = () => {
     console.log("❌ Screen sharing stopped. Stopping captures.");
   };
 
-  const captureScreenshot = () => {
-    if (!screenStream) {
+  const captureScreenshot = (stream) => {
+    if (!stream) {
       console.error("❌ No screen stream available.");
       return;
     }
 
-    const videoTrack = screenStream.getVideoTracks()[0];
+    const videoTrack = stream.getVideoTracks()[0];
     if (!videoTrack) {
       console.error("❌ No video track found.");
       return;
@@ -135,13 +133,13 @@ const InterviewPage = () => {
       .catch((err) => console.error("❌ Error capturing screenshot:", err));
   };
 
-  const captureAudioClip = async () => {
-    if (!screenStream) {
+  const captureAudioClip = (stream) => {
+    if (!stream) {
       console.error("❌ No screen stream available.");
       return;
     }
 
-    const audioTrack = screenStream.getAudioTracks().find((track) => track.kind === "audio");
+    const audioTrack = stream.getAudioTracks().find(track => track.kind === "audio");
     if (!audioTrack) {
       console.error("❌ No system audio track found. Ensure tab has active sound.");
       return;
@@ -154,16 +152,20 @@ const InterviewPage = () => {
     }
 
     try {
-      const mediaRecorder = new MediaRecorder(audioStream, { mimeType });
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current.stop();
+      }
+
+      mediaRecorderRef.current = new MediaRecorder(audioStream, { mimeType });
       let audioChunks = [];
 
-      mediaRecorder.ondataavailable = (event) => {
+      mediaRecorderRef.current.ondataavailable = (event) => {
         if (event.data.size > 0) {
           audioChunks.push(event.data);
         }
       };
 
-      mediaRecorder.onstop = async () => {
+      mediaRecorderRef.current.onstop = () => {
         if (audioChunks.length === 0) {
           console.error("❌ No audio data captured.");
           return;
@@ -173,9 +175,9 @@ const InterviewPage = () => {
         uploadCapturedData(audioBlob, "audio");
       };
 
-      mediaRecorder.start();
+      mediaRecorderRef.current.start();
       setTimeout(() => {
-        mediaRecorder.stop();
+        mediaRecorderRef.current.stop();
       }, 3000);
     } catch (error) {
       console.error("❌ Error starting MediaRecorder:", error);
