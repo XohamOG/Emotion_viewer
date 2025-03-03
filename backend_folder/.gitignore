@@ -1,1 +1,52 @@
+# General
+.DS_Store
+*.log
+*.sqlite3
+.env
+.vscode/
+
+# Python (Django)
+__pycache__/
+db.sqlite3
+*.pyc
+*.pyo
+*.pyd
+*.swp
+*.swo
+
+# Virtual Environment
 venv/
+env/
+*.venv
+
+# Django Migrations (optional, keep if needed)
+*/migrations/*.py
+!*/migrations/__init__.py
+
+# Node.js (React)
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Build Files
+build/
+dist/
+coverage/
+*.gz
+*.zip
+*.tar
+*.rar
+
+# Static and Media Files (optional, if using S3 or other storage)
+staticfiles/
+media/
+
+# IDE Specific
+.idea/
+*.iml
+
+# Git Ignore Overrides (if needed)
+!.gitignore
