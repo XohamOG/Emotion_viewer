@@ -91,24 +91,46 @@ def generate_interview_questions(data):
         return ["Describe your background and strengths."]
 
     prompt = f"""
-    You are an expert interviewer generating technical and behavioral interview questions.  
-    Based on the following candidate details, generate **10 relevant interview questions**:  
+You are an expert interviewer generating technical and behavioral interview questions. 
+Based on the following candidate details, generate interview questions categorized into three difficulty levels:
 
-    ### **Candidate Details**  
-    - **Skills**: {skills}  
-    - **Experience**: {experience}  
+Candidate Details:
+- Skills: {skills}
+- Experience: {experience}
 
-    ### **Question Guidelines:**  
-    - **Mix of technical and behavioral questions**  
-    - **Ensure variety** (e.g., practical scenarios, problem-solving, teamwork, challenges)  
-    - **Format:** Return the questions as a **simple numbered list**, without extra explanations.  
+Question Guidelines:
+- Generate 12 questions in total:
+  - 4 Simple (basic knowledge, definitions, general concepts)
+  - 4 Medium (practical applications, real-world problem-solving)
+  - 4 Difficult (complex problem-solving, advanced optimizations, deep expertise)
+- Include both technical and behavioral questions.
+- Return the questions in a structured JSON format.
 
-    ### **Example Format:**  
-    1. Question 1  
-    2. Question 2  
-    ...  
-    10. Question 10  
-    """
+Example Output:
+{{
+  "Simple": [
+    "What is Python, and how is it used?",
+    "Can you define Machine Learning in simple terms?",
+    "What are the key differences between lists and tuples in Python?",
+    "What are the basic responsibilities of a software engineer?"
+  ],
+  "Medium": [
+    "Can you explain how Django's ORM works?",
+    "Describe a project where you implemented machine learning. What challenges did you face?",
+    "How would you optimize a database query in an application?",
+    "Tell me about a time you had to work in a team to solve a problem."
+  ],
+  "Difficult": [
+    "How would you implement a custom deep learning model for text classification?",
+    "Explain the time complexity of different sorting algorithms and when to use them.",
+    "How would you scale a Django application to handle a million users?",
+    "Tell me about the most challenging bug you’ve fixed in a production system."
+  ]
+}}
+
+Ensure the output strictly follows the JSON format without additional explanations.
+"""
+
 
     model = genai.GenerativeModel("gemini-2.0-flash-thinking-exp-01-21")
     response = model.generate_content(prompt)
