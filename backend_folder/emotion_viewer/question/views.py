@@ -31,7 +31,6 @@ def upload_resume(request):
 
         # Generate interview questions (list)
         interview_questions = generate_interview_questions(structured_data)
-        print(interview_questions)
 
         # ✅ Send questions as JSON array (list)
         return JsonResponse({"questions": interview_questions}, status=200)
@@ -51,13 +50,21 @@ def parse_resume_with_gemini(text):
     model = genai.GenerativeModel("gemini-2.0-flash-thinking-exp-01-21")
 
     prompt = f"""
-    Extract structured data from the following resume. Identify 'Skills' and 'Experience' separately.
-    Return a valid JSON output in this format:
+    You are an advanced AI specialized in resume analysis. Extract structured data from the following resume and categorize the details accurately.
+
+    ### **Extraction Guidelines:**
+    - Identify **Skills**: Include only technical and soft skills mentioned in the resume.
+    - Identify **Experience**: Extract only work experience (job titles, company names, and roles) in chronological order.
+
+    ### **Output Format (JSON):**
+    Return a valid JSON object with this structure:
     {{
-      "Skills": ["Python", "Machine Learning", "Django"],
-      "Experience": ["Software Engineer at XYZ", "Intern at ABC"]
+    "Skills": ["Skill1", "Skill2", "Skill3"],
+    "Experience": ["Job Title at Company1", "Job Title at Company2"]
     }}
-    
+
+    Ensure the output is **correctly formatted JSON** with no additional text.
+
     Resume:
     {text}
     """
@@ -84,12 +91,23 @@ def generate_interview_questions(data):
         return ["Describe your background and strengths."]
 
     prompt = f"""
-    Generate 5 interview questions based on these details:
-    - Skills: {skills}
-    - Experience: {experience}
-    
-    Ensure the questions are relevant to the candidate's expertise and job role.
-    Return the questions in a simple list format.
+    You are an expert interviewer generating technical and behavioral interview questions.  
+    Based on the following candidate details, generate **10 relevant interview questions**:  
+
+    ### **Candidate Details**  
+    - **Skills**: {skills}  
+    - **Experience**: {experience}  
+
+    ### **Question Guidelines:**  
+    - **Mix of technical and behavioral questions**  
+    - **Ensure variety** (e.g., practical scenarios, problem-solving, teamwork, challenges)  
+    - **Format:** Return the questions as a **simple numbered list**, without extra explanations.  
+
+    ### **Example Format:**  
+    1. Question 1  
+    2. Question 2  
+    ...  
+    10. Question 10  
     """
 
     model = genai.GenerativeModel("gemini-2.0-flash-thinking-exp-01-21")
