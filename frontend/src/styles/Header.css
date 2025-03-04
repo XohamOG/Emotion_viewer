@@ -1,6 +1,6 @@
 /* Header Styling */
 .header {
-  background: linear-gradient(135deg, #1E1E2F, #3A3A5A); /* Deep Indigo Gradient */
+  background: linear-gradient(135deg, #FF8C42, #D94F04); /* Warm Orange Gradient */
   display: flex;
   justify-content: end;
   align-items: center;
@@ -8,9 +8,10 @@
   font-size: 22px;
   font-weight: bold;
   gap: 15px;
-  color: #FCE38A !important; /* Soft Yellow Text for Contrast */
-  border-bottom: 3px solid #FFD700; /* Gold Bottom Border */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  color: #FFF5E1 !important; /* Soft Cream for Contrast */
+  border-bottom: 3px solid #FFC107; /* Vibrant Gold Border */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(8px); /* Glassmorphism Effect */
 }
 
 /* Title Styling */
@@ -20,7 +21,8 @@
   letter-spacing: 2px;
   margin-right: 20px;
   text-align: right;
-  color: #FCE38A; /* Soft Yellow */
+  color: #FFF5E1; /* Soft Cream */
+  text-shadow: 2px 2px 6px rgba(255, 255, 255, 0.2); /* Subtle Glow */
 }
 
 /* User Icon Styling */
@@ -28,13 +30,13 @@
   font-size: 60px;
   cursor: pointer;
   transition: transform 0.3s ease, color 0.3s ease, font-size 0.3s ease;
-  color: #FF6363; /* Coral Red */
+  color: #FF3D00; /* Fiery Red */
 }
 
 .user-icon:hover {
   transform: scale(1.2);
-  color: #FFD700; /* Gold Hover */
-  font-size: 45px;
+  color: #FFC107; /* Gold Glow */
+  text-shadow: 0 0 10px rgba(255, 193, 7, 0.8);
 }
 
 /* Left Icons (Notification & Translation) */
@@ -47,12 +49,15 @@
 .icon {
   cursor: pointer;
   font-size: 40px;
-  transition: color 0.3s ease;
-  color: #66D9EF; /* Sky Blue */
+  transition: all 0.3s ease-in-out;
+  color: #FFAA33; /* Soft Orange */
+  text-shadow: 0px 2px 8px rgba(255, 170, 51, 0.4);
 }
 
 .icon:hover {
-  color: #FFD700; /* Gold Hover */
+  color: #FFC107; /* Gold Glow */
+  text-shadow: 0px 0px 12px rgba(255, 193, 7, 0.8);
+  transform: scale(1.1);
 }
 
 /* Right Icons */

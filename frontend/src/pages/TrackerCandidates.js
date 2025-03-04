@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "../styles/TrackerCandid.css";
 
 const TrackerCandidates = () => {
@@ -10,6 +10,8 @@ const TrackerCandidates = () => {
     { id: 2, name: "Jane Smith", email: "jane@example.com", job: "Data Analyst" },
   ]);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [screenStream, setScreenStream] = useState(null);
+  const videoRef = useRef(null);
 
   const addCandidate = () => {
     if (!candidateName.trim() || !candidateEmail.trim() || !selectedJob) {
@@ -30,17 +32,48 @@ const TrackerCandidates = () => {
     setSelectedJob("");
   };
 
-  const startInterview = () => {
-    if (!selectedCandidate) return;
+  const startInterview = async () => {
+    if (!selectedCandidate) {
+      alert("Please select a candidate before starting the interview.");
+      return;
+    }
     alert(`Starting interview for ${selectedCandidate.name}`);
+    await startScreenShare();
   };
 
-  // Find the selected candidate object
+  const startScreenShare = async () => {
+    try {
+      if (screenStream) {
+        stopScreenShare();
+      }
+
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+        audio: { echoCancellation: true, noiseSuppression: true },
+      });
+
+      stream.getVideoTracks()[0].onended = () => stopScreenShare();
+      setScreenStream(stream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.muted = true;
+      }
+    } catch (err) {
+      console.error("Error starting screen share:", err);
+    }
+  };
+
+  const stopScreenShare = () => {
+    if (screenStream) {
+      screenStream.getTracks().forEach(track => track.stop());
+      setScreenStream(null);
+    }
+  };
+
   const selectedCandidateObj = candidates.find((c) => c.id === Number(selectedCandidate));
 
   return (
     <>
-      {/* Tracker Form Section */}
       <div className="tracker-container">
         <h2>Add Candidates</h2>
         <div className="input-container">
@@ -78,11 +111,10 @@ const TrackerCandidates = () => {
             ))}
           </select>
           <button className="start-button" onClick={startInterview} disabled={!selectedCandidate}>
-            Start Interview
+            Start Interview & Screen Share
           </button>
         </div>
 
-        {/* Display selected candidate details (if any) */}
         {selectedCandidateObj && (
           <div className="selected-candidate-details">
             <h3>Selected Candidate</h3>
@@ -93,7 +125,6 @@ const TrackerCandidates = () => {
         )}
       </div>
 
-      {/* Existing Candidates Section Always Visible */}
       <div className="candidates-section">
         <h3>Existing Candidates</h3>
         <div className="candidates-list">
@@ -106,6 +137,8 @@ const TrackerCandidates = () => {
           ))}
         </div>
       </div>
+
+      <video ref={videoRef} autoPlay style={{ display: "none" }}></video>
     </>
   );
 };

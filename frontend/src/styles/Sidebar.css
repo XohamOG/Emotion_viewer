@@ -2,8 +2,8 @@
 .sidebar {
   width: 215px;
   height: 100vh;
-  background: #1E1E2F; /* Dark Indigo */
-  color: #FCE38A; /* Soft Yellow */
+  background: linear-gradient(135deg, #FF8C42 0%, #D94F04 100%); /* Gradient Orange */
+  color: #FFF5E1; /* Soft Cream */
   display: flex;
   flex-direction: column;
   padding: 20px;
@@ -11,7 +11,10 @@
   left: 0;
   top: 0;
   transition: transform 0.3s ease-in-out;
-  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.25);
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
+  border-right: 2px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px); /* Glassmorphism Effect */
+  z-index: 1000;
 }
 
 /* Sidebar Logo */
@@ -26,7 +29,7 @@
   width: 180px;
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0px 2px 5px rgba(252, 227, 138, 0.6)); /* Soft Glow */
+  filter: drop-shadow(0px 2px 5px rgba(255, 180, 90, 0.6)); /* Soft Glow */
 }
 
 /* Sidebar Links */
@@ -42,14 +45,41 @@
 
 .sidebar ul li a {
   text-decoration: none;
-  color: #FCE38A; /* Soft Yellow */
+  color: #FFF5E1; /* Soft Cream */
   font-size: 1.2rem;
   padding: 12px 20px;
   display: flex;
   align-items: center;
   border-radius: 8px;
-  transition: all 0.3s ease;
-  background: transparent;
+  transition: all 0.3s ease-in-out;
+  background: rgba(255, 255, 255, 0.1); /* Transparent Background */
+  backdrop-filter: blur(5px);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated Gradient Glow */
+.sidebar ul li a::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.4s ease-in-out;
+}
+
+/* Hover Effect */
+.sidebar ul li a:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #FFF5E1;
+  transform: translateX(6px);
+  box-shadow: 0px 4px 12px rgba(217, 79, 4, 0.5);
+}
+
+.sidebar ul li a:hover::before {
+  left: 100%;
 }
 
 /* Icons */
@@ -57,14 +87,7 @@
   margin-right: 12px;
   width: 22px;
   height: 22px;
-}
-
-/* Hover Effect */
-.sidebar ul li a:hover {
-  background: #FF6363; /* Vibrant Coral */
-  color: #1E1E2F; /* Dark Indigo */
-  transform: translateX(6px);
-  box-shadow: 0px 4px 8px rgba(255, 99, 99, 0.5); /* Soft Glow Effect */
+  filter: drop-shadow(0px 2px 5px rgba(255, 255, 255, 0.4));
 }
 
 /* Sidebar Animation */
