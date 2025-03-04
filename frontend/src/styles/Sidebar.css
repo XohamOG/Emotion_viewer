@@ -2,8 +2,8 @@
 .sidebar {
   width: 215px;
   height: 100vh;
-  background: #FF8C42; /* Warm Orange */
-  color: #FFF3E0; /* Light Cream */
+  background: #1E1E2F; /* Dark Indigo */
+  color: #FCE38A; /* Soft Yellow */
   display: flex;
   flex-direction: column;
   padding: 20px;
@@ -11,22 +11,22 @@
   left: 0;
   top: 0;
   transition: transform 0.3s ease-in-out;
-  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.25);
 }
 
-/* Logo Container */
+/* Sidebar Logo */
 .logo-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
-/* Logo Image */
 .logo {
-  width: 200px;
+  width: 180px;
   height: auto;
   object-fit: contain;
+  filter: drop-shadow(0px 2px 5px rgba(252, 227, 138, 0.6)); /* Soft Glow */
 }
 
 /* Sidebar Links */
@@ -37,18 +37,19 @@
 }
 
 .sidebar ul li {
-  margin: 20px 0;
+  margin: 18px 0;
 }
 
 .sidebar ul li a {
   text-decoration: none;
-  color: #FFF3E0; /* Light Cream */
+  color: #FCE38A; /* Soft Yellow */
   font-size: 1.2rem;
   padding: 12px 20px;
   display: flex;
   align-items: center;
   border-radius: 8px;
   transition: all 0.3s ease;
+  background: transparent;
 }
 
 /* Icons */
@@ -60,9 +61,10 @@
 
 /* Hover Effect */
 .sidebar ul li a:hover {
-  background: #D2691E; /* Darker Orange */
-  color: #FFF3E0;
-  transform: translateX(8px);
+  background: #FF6363; /* Vibrant Coral */
+  color: #1E1E2F; /* Dark Indigo */
+  transform: translateX(6px);
+  box-shadow: 0px 4px 8px rgba(255, 99, 99, 0.5); /* Soft Glow Effect */
 }
 
 /* Sidebar Animation */

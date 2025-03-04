@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+import "../styles/Tracker.css";
+
 
 const InterviewPage = () => {
   const [jobPositions, setJobPositions] = useState([]);
@@ -219,13 +222,13 @@ const InterviewPage = () => {
   };
 
   return (
-    <div>
+    <div className="container">
       <h2>Start Interview</h2>
 
-      <div>
+      <div className="inpcont">
         <input type="text" value={newJobTitle} onChange={(e) => setNewJobTitle(e.target.value)} placeholder="Enter job title" />
         <textarea value={newJobDescription} onChange={(e) => setNewJobDescription(e.target.value)} placeholder="Enter job description" rows="4" />
-        <button onClick={addJob}>Add Job</button>
+        <button className="addbut" onClick={addJob}>Add Job</button>
       </div>
 
       <select onChange={(e) => setSelectedJob(e.target.value)}>
@@ -235,7 +238,13 @@ const InterviewPage = () => {
         ))}
       </select>
 
-      <button onClick={startScreenShare} disabled={!selectedJob}>Start Interview & Screen Share</button>
+      <button className="intbut" onClick={startScreenShare} disabled={!selectedJob}>Start Interview & Screen Share</button>
+      
+
+      <Link to="/interviewer/candidates">
+        <button className="canbut">Go to Candidates Page</button>
+      </Link>
+
 
       <video ref={videoRef} autoPlay style={{ display: "none" }}></video>
     </div>

@@ -1,6 +1,6 @@
-/* Header styling */
+/* Header Styling */
 .header {
-  background: linear-gradient(135deg, #FF8C42, #D2691E); /* Orange gradient */
+  background: linear-gradient(135deg, #1E1E2F, #3A3A5A); /* Deep Indigo Gradient */
   display: flex;
   justify-content: end;
   align-items: center;
@@ -8,37 +8,37 @@
   font-size: 22px;
   font-weight: bold;
   gap: 15px;
-  color: #ffffff !important; /* Light cream text for contrast */
-  border-bottom: 3px solid #FFF3E0;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: #FCE38A !important; /* Soft Yellow Text for Contrast */
+  border-bottom: 3px solid #FFD700; /* Gold Bottom Border */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* Title styling */
+/* Title Styling */
 .header-title {
   font-size: 28px;
   font-weight: bold;
   letter-spacing: 2px;
   margin-right: 20px;
   text-align: right;
+  color: #FCE38A; /* Soft Yellow */
 }
 
-/* User icon styling */
+/* User Icon Styling */
 .user-icon {
-  margin-top: 10px;
   font-size: 60px;
   cursor: pointer;
   transition: transform 0.3s ease, color 0.3s ease, font-size 0.3s ease;
+  color: #FF6363; /* Coral Red */
 }
 
 .user-icon:hover {
   transform: scale(1.2);
-  color: #FFD700; /* Gold hover color */
+  color: #FFD700; /* Gold Hover */
   font-size: 45px;
 }
 
-/* Left icons (notification & translation) */
+/* Left Icons (Notification & Translation) */
 .left-icons {
-  margin-top: 5px;
   display: flex;
   align-items: center;
   gap: 20px;
@@ -48,13 +48,14 @@
   cursor: pointer;
   font-size: 40px;
   transition: color 0.3s ease;
+  color: #66D9EF; /* Sky Blue */
 }
 
 .icon:hover {
-  color: #FFD700; /* Gold hover effect */
+  color: #FFD700; /* Gold Hover */
 }
 
-/* Move notification & translate icons to the right */
+/* Right Icons */
 .right-icons {
   display: flex;
   align-items: center;
