@@ -1,13 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../styles/Tracker.css";
 
 const InterviewPage = () => {
   const [jobPositions, setJobPositions] = useState([]);
-  const [selectedJob, setSelectedJob] = useState(null);
   const [newJobTitle, setNewJobTitle] = useState("");
   const [newJobDescription, setNewJobDescription] = useState("");
-  const videoRef = useRef(null);
 
   useEffect(() => {
     fetchJobs();
@@ -15,7 +13,7 @@ const InterviewPage = () => {
 
   const fetchJobs = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/jobs/");
+      const res = await fetch("http://127.0.0.1:8000/api/interview/jobs/");
       if (!res.ok) throw new Error("Failed to fetch jobs.");
       const data = await res.json();
       setJobPositions(data);
@@ -31,7 +29,7 @@ const InterviewPage = () => {
     }
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/jobs/", {
+      const res = await fetch("http://127.0.0.1:8000/api/interview/jobs/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: newJobTitle, description: newJobDescription }),
@@ -51,23 +49,31 @@ const InterviewPage = () => {
       <h2>Start Interview</h2>
 
       <div className="inpcont">
-        <input type="text" value={newJobTitle} onChange={(e) => setNewJobTitle(e.target.value)} placeholder="Enter job title" />
-        <textarea value={newJobDescription} onChange={(e) => setNewJobDescription(e.target.value)} placeholder="Enter job description" rows="4" />
+        <input
+          type="text"
+          value={newJobTitle}
+          onChange={(e) => setNewJobTitle(e.target.value)}
+          placeholder="Enter job title"
+        />
+        <textarea
+          value={newJobDescription}
+          onChange={(e) => setNewJobDescription(e.target.value)}
+          placeholder="Enter job description"
+          rows="4"
+        />
         <button className="addbut" onClick={addJob}>Add Job</button>
       </div>
 
-      <select onChange={(e) => setSelectedJob(e.target.value)}>
-        <option value="">Select a Job</option>
+      <h3>Available Jobs</h3>
+      <ul>
         {jobPositions.map((job) => (
-          <option key={job.id} value={job.id}>{job.title}</option>
+          <li key={job.id}>{job.title} - {job.description}</li>
         ))}
-      </select>
+      </ul>
 
       <Link to="/interviewer/candidates">
         <button className="canbut">Go to Candidates Page</button>
       </Link>
-
-      <video ref={videoRef} autoPlay style={{ display: "none" }}></video>
     </div>
   );
 };

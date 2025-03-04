@@ -1,17 +1,18 @@
 from rest_framework import serializers
-from .models import JobPosition, InterviewSession, CapturedData
+from .models import JobPosition, Candidate
 
 class JobPositionSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobPosition
-        fields = "__all__"  # Automatically includes 'title' and 'description'
+        fields = '__all__'
 
-class InterviewSessionSerializer(serializers.ModelSerializer):
+class CandidateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = InterviewSession
-        fields = "__all__"
+        model = Candidate
+        fields = '__all__'
+from .models import Capture
 
-class CapturedDataSerializer(serializers.ModelSerializer):
+class CaptureSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CapturedData
+        model = Capture
         fields = "__all__"

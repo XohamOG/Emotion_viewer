@@ -1,12 +1,12 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import JobPositionViewSet, start_interview, upload_captured_data
-
-router = DefaultRouter()
-router.register(r'jobs', JobPositionViewSet)
+from django.urls import path
+from .views import JobPositionListCreate, CandidateListCreate
+from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
+from .views import CaptureUploadView
 
 urlpatterns = [
-    path("", include(router.urls)),
-    path("interviews/start/", start_interview),
-    path("interviews/upload/", upload_captured_data),
+    path('jobs/', JobPositionListCreate.as_view(), name='job-list-create'),
+    path('candidates/', CandidateListCreate.as_view(), name='candidate-list-create'),
+    path("upload/", CaptureUploadView.as_view(), name="upload-file"),
 ]

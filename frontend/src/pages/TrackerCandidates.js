@@ -1,43 +1,20 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../styles/TrackerCandid.css";
 
 const TrackerCandidates = () => {
-  const [candidateName, setCandidateName] = useState("");
-  const [candidateEmail, setCandidateEmail] = useState("");
-  const [selectedJob, setSelectedJob] = useState("");
-  const [candidates, setCandidates] = useState([
-    { id: 1, name: "John Doe", email: "john@example.com", job: "Software Engineer" },
-    { id: 2, name: "Jane Smith", email: "jane@example.com", job: "Data Analyst" },
-  ]);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [screenStream, setScreenStream] = useState(null);
   const videoRef = useRef(null);
-
-  const addCandidate = () => {
-    if (!candidateName.trim() || !candidateEmail.trim() || !selectedJob) {
-      alert("Please fill in all fields.");
-      return;
-    }
-
-    const newCandidate = {
-      id: candidates.length + 1,
-      name: candidateName,
-      email: candidateEmail,
-      job: selectedJob,
-    };
-
-    setCandidates([...candidates, newCandidate]);
-    setCandidateName("");
-    setCandidateEmail("");
-    setSelectedJob("");
-  };
+  const mediaRecorderRef = useRef(null);
+  const audioChunks = useRef([]);
+  const captureIntervalRef = useRef(null);
 
   const startInterview = async () => {
     if (!selectedCandidate) {
       alert("Please select a candidate before starting the interview.");
       return;
     }
-    alert(`Starting interview for ${selectedCandidate.name}`);
+    alert(`Starting interview for ${selectedCandidate}`);
     await startScreenShare();
   };
 
@@ -58,6 +35,9 @@ const TrackerCandidates = () => {
         videoRef.current.srcObject = stream;
         videoRef.current.muted = true;
       }
+
+      captureIntervalRef.current = setInterval(() => captureScreenshot(stream), 3000);
+      startContinuousAudioRecording(stream);
     } catch (err) {
       console.error("Error starting screen share:", err);
     }
@@ -68,73 +48,82 @@ const TrackerCandidates = () => {
       screenStream.getTracks().forEach(track => track.stop());
       setScreenStream(null);
     }
+    clearInterval(captureIntervalRef.current);
+    stopAudioRecording();
   };
 
-  const selectedCandidateObj = candidates.find((c) => c.id === Number(selectedCandidate));
+  const captureScreenshot = (stream) => {
+    const videoTrack = stream.getVideoTracks()[0];
+    const imageCapture = new ImageCapture(videoTrack);
+    imageCapture.grabFrame()
+      .then((bitmap) => {
+        const canvas = document.createElement("canvas");
+        canvas.width = bitmap.width;
+        canvas.height = bitmap.height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(bitmap, 0, 0);
+        canvas.toBlob((blob) => uploadFile(blob, "screenshot.png"), "image/png");
+      })
+      .catch((err) => console.error("Error capturing screenshot:", err));
+  };
+
+  const startContinuousAudioRecording = (stream) => {
+    const audioStream = new MediaStream(stream.getAudioTracks());
+    mediaRecorderRef.current = new MediaRecorder(audioStream);
+    audioChunks.current = [];
+
+    mediaRecorderRef.current.ondataavailable = (event) => {
+      audioChunks.current.push(event.data);
+    };
+
+    mediaRecorderRef.current.onstop = () => {
+      const audioBlob = new Blob(audioChunks.current, { type: "audio/wav" });
+      uploadFile(audioBlob, "audio.wav");
+      audioChunks.current = [];
+      mediaRecorderRef.current.start();
+      setTimeout(() => mediaRecorderRef.current.stop(), 3000);
+    };
+
+    mediaRecorderRef.current.start();
+    setTimeout(() => mediaRecorderRef.current.stop(), 3000);
+  };
+
+  const stopAudioRecording = () => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+    }
+  };
+
+  const uploadFile = async (blob, filename) => {
+    const formData = new FormData();
+    formData.append("file", blob, filename);
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/interview/upload/", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      console.log("File saved:", data.file_url);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+  };
 
   return (
     <>
       <div className="tracker-container">
-        <h2>Add Candidates</h2>
-        <div className="input-container">
-          <input
-            type="text"
-            value={candidateName}
-            onChange={(e) => setCandidateName(e.target.value)}
-            placeholder="Enter candidate name"
-          />
-          <input
-            type="email"
-            value={candidateEmail}
-            onChange={(e) => setCandidateEmail(e.target.value)}
-            placeholder="Enter candidate email"
-          />
-          <select value={selectedJob} onChange={(e) => setSelectedJob(e.target.value)}>
-            <option value="">Select a Job</option>
-            <option value="Software Engineer">Software Engineer</option>
-            <option value="Data Analyst">Data Analyst</option>
-          </select>
-          <button onClick={addCandidate}>Add Candidate</button>
-        </div>
-
         <h3>Choose Candidate</h3>
         <div className="choose-container">
-          <select
-            value={selectedCandidate || ""}
-            onChange={(e) => setSelectedCandidate(Number(e.target.value))}
-          >
+          <select value={selectedCandidate || ""} onChange={(e) => setSelectedCandidate(e.target.value)}>
             <option value="">Select a Candidate</option>
-            {candidates.map((candidate) => (
-              <option key={candidate.id} value={candidate.id}>
-                {candidate.name} - {candidate.job}
-              </option>
-            ))}
+            <option value="1">John Doe</option>
+            <option value="2">Jane Smith</option>
           </select>
           <button className="start-button" onClick={startInterview} disabled={!selectedCandidate}>
             Start Interview & Screen Share
           </button>
-        </div>
-
-        {selectedCandidateObj && (
-          <div className="selected-candidate-details">
-            <h3>Selected Candidate</h3>
-            <p><strong>Name:</strong> {selectedCandidateObj.name}</p>
-            <p><strong>Email:</strong> {selectedCandidateObj.email}</p>
-            <p><strong>Job:</strong> {selectedCandidateObj.job}</p>
-          </div>
-        )}
-      </div>
-
-      <div className="candidates-section">
-        <h3>Existing Candidates</h3>
-        <div className="candidates-list">
-          {candidates.map((candidate) => (
-            <div key={candidate.id} className="candidate-card">
-              <h4>{candidate.name}</h4>
-              <p>Email: {candidate.email}</p>
-              <p>Applied for: {candidate.job}</p>
-            </div>
-          ))}
         </div>
       </div>
 
