@@ -8,6 +8,7 @@ import ResumeReader from "./pages/ResumeReader";
 import Reports from "./pages/Reports";
 import Support from "./pages/Support";
 import Tracker from "./pages/Tracker";
+import TrackerCandidates from "./pages/TrackerCandidates";
 
 function App() {
   return (
@@ -16,14 +17,16 @@ function App() {
         {/* Landing Page */}
         <Route path="/" element={<LandingPage />} />
 
-        {/* Patient Layout with Nested Routes */}
+        {/* Interviwer Layout with Nested Routes */}
         <Route path="/interviewer" element={<InterviewerLayout />}>
           <Route index element={<Home />} />
           <Route path="home" element={<Home />} />
           <Route path="resume" element={<ResumeReader />} />
           <Route path="reports" element={<Reports />} />
           <Route path="support" element={<Support />} />
-          <Route path="medicines" element={<Tracker />} />
+          <Route path="interview" element={<Tracker />} />
+          <Route path="candidates" element={<TrackerCandidates />} />
+
         </Route>
 
         {/* Doctor Layout with its own pages (modify as needed) */}
@@ -31,7 +34,8 @@ function App() {
         <Route path="resume" element={<ResumeReader />} />
           <Route path="reports" element={<Reports />} />
           <Route path="support" element={<Support />} />
-          <Route path="medicines" element={<Tracker />} />
+          <Route path="interview" element={<Tracker />} />
+          <Route path="candidates" element={<TrackerCandidates />} />
         </Route>
       </Routes>
     </Router>

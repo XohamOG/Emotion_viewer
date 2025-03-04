@@ -1,81 +1,83 @@
 import React, { useState } from "react";
-import Tesseract from "tesseract.js";
 
 const ResumeReader = () => {
-  const [image, setImage] = useState(null);
-  const [text, setText] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState(0); // Progress state
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [questions, setQuestions] = useState([]);
 
-  // Handle file selection
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setImage(URL.createObjectURL(file));
-      extractText(file);
+  const handleFileUpload = (event) => {
+    const uploadedFile = event.target.files[0];
+    if (uploadedFile && uploadedFile.type === "application/pdf") {
+      setFile(uploadedFile);
+    } else {
+      alert("Only PDF files are allowed!");
+      setFile(null);
     }
   };
 
-  // Perform OCR with progress tracking
-  const extractText = (file) => {
-    setLoading(true);
-    setProgress(0);
+  const handleSubmit = async () => {
+    if (!file) {
+      alert("Please upload a resume first.");
+      return;
+    }
 
-    Tesseract.recognize(file, "eng", {
-      logger: (m) => {
-        if (m.status === "recognizing text") {
-          setProgress(Math.floor(m.progress * 100)); // Update progress
-        }
-      },
-    })
-      .then(({ data: { text } }) => {
-        setText(text);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("OCR Error:", error);
-        setLoading(false);
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("resume", file);
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/upload-resume/", {
+        method: "POST",
+        body: formData,
       });
+
+      if (!response.ok) throw new Error("Upload failed!");
+
+      const data = await response.json();
+      setQuestions(data.questions);
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.header}>📄 Resume Reader</h2>
-      <label htmlFor="file-upload" style={styles.fileLabel}>
-        <span style={styles.fileButton}>Choose File</span>
+      <h2 style={styles.header}>📄 Resume Uploader</h2>
+
+      <label style={styles.fileLabel}>
+        Select Resume (PDF)
+        <input type="file" accept=".pdf" onChange={handleFileUpload} style={styles.input} />
       </label>
-      <input
-        id="file-upload"
-        type="file"
-        accept="image/*"
-        onChange={handleImageUpload}
-        style={styles.input}
-      />
 
-      {image && (
-        <div style={styles.imageContainer}>
-          <img src={image} alt="Uploaded Prescription" style={styles.image} />
-        </div>
-      )}
+      {file && <p style={styles.fileName}>Selected File: {file.name}</p>}
 
-      {loading && (
+      <button onClick={handleSubmit} style={styles.fileButton} disabled={uploading}>
+        {uploading ? "Uploading..." : "Upload & Generate Questions"}
+      </button>
+
+      {uploading && (
         <div style={styles.progressBarContainer}>
-          <p style={styles.progressText}>Processing: {progress}%</p>
-          <div style={{ ...styles.progressBar, width: `${progress}%` }} />
+          <p style={styles.progressText}>Uploading...</p>
+          <div style={{ ...styles.progressBar, width: "50%" }}></div>
         </div>
       )}
 
-      {text && (
+      {questions.length > 0 && (
         <div style={styles.textContainer}>
-          <h3 style={styles.textTitle}>Extracted Text:</h3>
-          <p style={styles.text}>{text}</p>
+          <h3 style={styles.textTitle}>Generated Questions:</h3>
+          <ul>
+            {questions.map((q, index) => (
+              <li key={index} style={styles.text}>{q}</li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
   );
 };
 
-// Styling with animations
 const styles = {
   container: {
     textAlign: "center",
@@ -115,22 +117,10 @@ const styles = {
     fontSize: "16px",
     transition: "background-color 0.3s, transform 0.3s",
     cursor: "pointer",
+    marginTop: "10px",
   },
   input: {
-    display: "none", // Hide the default file input
-  },
-  imageContainer: {
-    marginTop: "20px",
-    padding: "15px",
-    borderRadius: "12px",
-    backgroundColor: "#f3f3f3",
-    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-    transition: "all 0.3s ease-in-out",
-  },
-  image: {
-    maxWidth: "100%",
-    height: "auto",
-    borderRadius: "12px",
+    display: "none",
   },
   progressBarContainer: {
     marginTop: "30px",

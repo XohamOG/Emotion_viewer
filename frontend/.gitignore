@@ -1,9 +1,29 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# General
+.DS_Store
+*.log
+*.sqlite3
+.env
+.vscode/
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+# Python (Django)
+__pycache__/
+db.sqlite3
+*.pyc
+*.pyo
+*.pyd
+*.swp
+*.swo
+
+# Virtual Environment
+venv/
+env/
+*.venv
+
+# Django Migrations (optional, keep if needed)
+*/migrations/*.py
+!*/migrations/__init__.py
+
+# Node.js (React)
 node_modules/
 
 # testing

@@ -26,7 +26,7 @@ const Sidebar = () => {
           </NavLink>
         </li>
         <li>
-          <NavLink to="medicines" className={({ isActive }) => (isActive ? "active" : "")}>
+          <NavLink to="interview" className={({ isActive }) => (isActive ? "active" : "")}>
             <FaUserTie className="icon" /> Interview
           </NavLink>
         </li>

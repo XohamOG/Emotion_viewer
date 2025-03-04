@@ -1,0 +1,132 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap");
+
+body {
+  font-family: "Roboto", sans-serif;
+  background: #f9f9f9;
+  margin: 0;
+  padding: 0;
+}
+
+.tracker-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+h2, h3 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.input-container button{
+    width: 200px;
+}
+input, select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: all 0.3s ease-in-out;
+}
+
+input:focus, select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.choose-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.start-button {
+  width: auto;
+  padding: 10px 16px;
+}
+
+/* Full-width Existing Candidates Section */
+.candidates-section {
+  margin-top: 40px;
+  padding: 30px;
+  width: 100%;
+  background: #f1f1f1;
+  text-align: center;
+}
+
+/* Increased Font Size for Candidates Section */
+.candidates-section h3 {
+  font-size: 28px; /* Larger heading */
+  font-weight: 600;
+}
+
+.candidates-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.candidate-card {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 8px;
+  border-left: 6px solid #007bff;
+  text-align: left;
+  width: 320px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Increased font size for candidate details */
+.candidate-card h4 {
+  margin: 0;
+  font-size: 20px; /* Increased size */
+  color: #007bff;
+  font-weight: 500;
+}
+
+.candidate-card p {
+  margin: 8px 0;
+  font-size: 16px; /* Increased size */
+  color: #555;
+  font-weight: 400;
+}

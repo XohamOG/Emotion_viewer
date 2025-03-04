@@ -1,229 +1,143 @@
-.tracker-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 20px;
-}
-.tracker-section li{
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.tracker-left {
-  flex: 0.7;
-  font-size: 1.4em; /* Slightly smaller text */
-  color: #333;
-}
+/* Import Roboto Font */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
 
-.tracker-right {
-  flex: 0.3;
-  flex-direction: column;
-  margin-left: 20px;
-  background: #f9f9f9;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.1);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: transform 0.3s ease;
-}
-
-.tracker-right:hover {
-  transform: translateY(-3px);
-}
-
-.tracker-section {
-  width: 100%;
-  padding: 18px;
-  border-radius: 12px;
-  text-align: center;
-  background: linear-gradient(145deg, #f9f9f9, #e6e6e6);
-  transition: all 0.3s ease;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.tracker-section:hover {
-  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
-}
-
-.tracker-section button {
-  font-size: 1.2em; /* Smaller button text */
-  background-color: #4caf50;
-  color: white;
-  padding: 8px 16px; /* Slightly smaller padding */
-  border: none;
-  cursor: pointer;
-  border-radius: 50px;
-  margin-top: 8px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
-}
-
-.tracker-section button:hover {
-  background-color: #45a049;
-  transform: translateY(-2px);
-}
-
-.tracker-section ul {
-  list-style-type: none;
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
   padding: 0;
 }
 
-.tracker-section li {
-  background-color: #e0e0e0;
-  margin: 8px 0;
-  padding: 10px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+.container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
 }
 
-.tracker-section li:hover {
-  background-color: #d4d4d4;
+h2 {
+  font-size: 26px;
+  color: #333;
+  font-weight: 700;
+  margin-bottom: 20px;
 }
-
-.remove-btn {
-  background-color: #ff4d4d;
-  color: white;
-  padding: 6px;
-  border: none;
-  cursor: pointer;
-  border-radius: 50px;
-  margin-top: 8px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.remove-btn:hover {
-  background-color: #e04343;
-  transform: translateY(-2px);
-}
-
-.popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: linear-gradient(145deg, #f9f9f9, #e6e6e6);
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: 0px 6px 30px rgba(0, 0, 0, 0.15);
-  width: 80%;
-  max-width: 450px;
-  z-index: 9999;
-  overflow: hidden;
-  animation: popupFadeIn 0.3s ease-out;
-}
-.popup input{
-  font-size: 1.3em;
-}
-@keyframes popupFadeIn {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -60%);
-  }
-  100% {
-    opacity: 1;
-    transform: translate(-50%, -50%);
-  }
-}
-
-.popup-content {
+.inpcont{
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
-.popup-content button {
-  font-size: 1em;
-  background-color: #4caf50; /* Fresh green background */
-  color: white;
-  padding: 12px 28px; /* Spacious padding */
-  border: none;
-  border-radius: 50px; /* Smooth rounded edges */
+/* Input, Textarea, and Dropdown Styling */
+.input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+input,
+textarea,
+select {
+  width: 85%;
+  max-width: 500px;
+  padding: 14px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+  transition: 0.3s ease-in-out;
+  background: #f9f9f9;
+  outline: none;
+  box-shadow: inset 0px 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Input focus effects */
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #007bff;
+  background: white;
+  box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.3);
+}
+
+/* Textarea */
+textarea {
+  resize: vertical;
+  height: 100px;
+}
+
+/* Dropdown */
+select {
   cursor: pointer;
-  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-  font-weight: 600; /* Slightly bolder text for emphasis */
-  text-align: center;
-}
-.popup-header {
-  font-size: 2.2em; /* Reduced font size for header */
-  font-weight: 700;
-  color: #333;
-  border-bottom: 3px solid #ddd;
-  padding-bottom: 15px;
-  text-align: center;
-  letter-spacing: 1px;
+  appearance: none; /* Removes default browser styling */
+  background: white url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="%23007bff"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 12px center;
+  background-size: 14px;
+  padding-right: 40px;
 }
 
-.popup-body {
-  font-size: 1.2em; /* Reduced body text size */
-  color: #555;
-  line-height: 1.5;
-  text-align: center;
-}
-
-.popup-footer {
+/* Button styles */
+.button-container {
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 15px;
+  margin-top: 10px;
 }
 
-.popup-footer button {
-  padding: 12px 26px; /* Slightly smaller padding */
-  font-size: 1.4em; /* Slightly smaller font size */
+button {
+  padding: 12px 18px;
+  background: #007bff;
   color: white;
-  background-color: #4caf50;
   border: none;
-  border-radius: 50px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-  box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s ease-in-out;
+  font-family: 'Roboto', sans-serif;
+  justify-self: center;
+}
+.intbut,.canbut,.addbut{
+  width: 600px;
 }
 
-.popup-footer button:hover {
-  background-color: #45a049;
-  transform: translateY(-3px);
+button:hover {
+  background: #0056b3;
 }
 
-.popup-footer .cancel-btn {
-  background-color: #ff5722;
+button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
 }
 
-.popup-footer .cancel-btn:hover {
-  background-color: #e64a19;
+/* Video Container */
+.video-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
 }
 
-.popup-footer button:active {
-  transform: translateY(2px);
-}
-
-.react-calendar {
-  display: none;
+video {
   width: 100%;
-  border-radius: 12px;
-  font-size: 1.4em; /* Slightly smaller font size */
-  box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-}
-
-.react-calendar:hover {
-  transform: scale(1.02);
-}
-
-.calendar-tile {
-  background-color: #f0f0f0;
+  max-width: 500px;
   border-radius: 8px;
-  transition: background-color 0.3s ease;
+  border: 2px solid #007bff;
 }
 
-.calendar-tile:hover {
-  background-color: #4caf50;
-  color: white;
+.link-button {
+  margin-top: 20px;
+  display: inline-block;
+  text-decoration: none;
 }
 
-.calendar-tile:focus {
-  background-color: #ff9800;
-  color: white;
+.link-button button {
+  background: #28a745;
+}
+
+.link-button button:hover {
+  background: #1e7e34;
 }
