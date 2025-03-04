@@ -1,8 +1,14 @@
-import os
+import json
+import fitz  # PyMuPDF for extracting text from PDF
 import google.generativeai as genai
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from dotenv import load_dotenv
+import os
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+import re
+from fpdf import FPDF
 
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -11,77 +17,82 @@ genai.configure(api_key=GEMINI_API_KEY)
 
 @csrf_exempt
 def upload_resume(request):
-    if request.method == 'POST' and request.FILES.get('resume'):
-        resume_file = request.FILES['resume']
+    """Handles resume upload, extracts structured information, and sends questions to frontend."""
+    if request.method == "POST" and request.FILES.get("resume"):
+        uploaded_file = request.FILES["resume"].read()
 
-        # Convert PDF file to binary data
-        pdf_bytes = resume_file.read()
+        # Extract text from PDF
+        extracted_text = extract_text_from_pdf(uploaded_file)
+        if not extracted_text:
+            return JsonResponse({"error": "Failed to extract text from resume"}, status=400)
 
-        # Extract text using Gemini API
-        resume_text = extract_text_with_gemini(pdf_bytes)
+        # Process text with Gemini AI
+        structured_data = parse_resume_with_gemini(extracted_text)
 
-        if not resume_text:
-            return JsonResponse({"error": "Failed to extract text from PDF"}, status=500)
+        # Generate interview questions (list)
+        interview_questions = generate_interview_questions(structured_data)
+        print(interview_questions)
 
-        # Process extracted text and generate questions
-        resume_data = parse_resume_with_gemini(resume_text)
-        questions = generate_interview_questions(resume_data)
-
-        return JsonResponse({"questions": questions})
+        # ✅ Send questions as JSON array (list)
+        return JsonResponse({"questions": interview_questions}, status=200)
 
     return JsonResponse({"error": "Invalid request"}, status=400)
 
-def extract_text_with_gemini(pdf_bytes):
-    """Uses Gemini API to extract text from a PDF file."""
-    model = genai.GenerativeModel("gemini-2.0-flash-thinking-exp-01-21")
-    
-    response = model.generate_content(["Extract text from this PDF:", pdf_bytes])
 
-    if response and response.text:
-        return response.text.strip()
-    
-    return None
+def extract_text_from_pdf(pdf_bytes):
+    """Extracts text from a PDF file using PyMuPDF."""
+    pdf_document = fitz.open(stream=pdf_bytes, filetype="pdf")
+    text = "\n".join(page.get_text("text") for page in pdf_document)
+
+    return text.strip() if text else None
 
 def parse_resume_with_gemini(text):
-    """Uses Gemini API to extract structured resume data."""
+    """Extracts structured resume data using Gemini API."""
     model = genai.GenerativeModel("gemini-2.0-flash-thinking-exp-01-21")
 
-    prompt = f"""Extract and return structured JSON data from the following resume text.
-                 Identify 'Skills' and 'Experience' sections. 
-                 Return JSON in this format:
-                 {{"Skills": ["Skill1", "Skill2"], "Experience": ["Job1", "Job2"]}}.
-
-                 Resume Text:
-                 {text}
-              """
+    prompt = f"""
+    Extract structured data from the following resume. Identify 'Skills' and 'Experience' separately.
+    Return a valid JSON output in this format:
+    {{
+      "Skills": ["Python", "Machine Learning", "Django"],
+      "Experience": ["Software Engineer at XYZ", "Intern at ABC"]
+    }}
     
+    Resume:
+    {text}
+    """
+
     response = model.generate_content(prompt)
 
     if response and response.text:
         try:
-            return eval(response.text)  # Convert JSON-like response to Python dict
-        except:
-            return {"Skills": [], "Experience": []}
+            # Ensure valid JSON extraction (handling Gemini's extra text)
+            json_match = re.search(r"\{.*\}", response.text, re.DOTALL)
+            if json_match:
+                return json.loads(json_match.group())  # Extract only the JSON part
+        except json.JSONDecodeError:
+            pass  # If JSON parsing fails, return empty data
 
-    return {"Skills": [], "Experience": []}
+    return {"Skills": [], "Experience": []}  # Default if parsing fails
 
-def generate_interview_questions(resume_data):
-    """Generates AI-based interview questions from resume data."""
+def generate_interview_questions(data):
+    """Generates interview questions based on extracted resume data."""
+    skills = ", ".join(data.get("Skills", []))
+    experience = ", ".join(data.get("Experience", []))
+
+    if not skills and not experience:
+        return ["Describe your background and strengths."]
+
+    prompt = f"""
+    Generate 5 interview questions based on these details:
+    - Skills: {skills}
+    - Experience: {experience}
+    
+    Ensure the questions are relevant to the candidate's expertise and job role.
+    Return the questions in a simple list format.
+    """
+
     model = genai.GenerativeModel("gemini-2.0-flash-thinking-exp-01-21")
+    response = model.generate_content(prompt)
 
-    skills = resume_data.get("Skills", [])
-    experience = resume_data.get("Experience", [])
-
-    questions = []
-
-    if skills:
-        skill_prompt = f"Generate 5 advanced and unique technical interview questions for a candidate skilled in {', '.join(skills)}."
-        response = model.generate_content(skill_prompt)
-        questions.extend(response.text.strip().split("\n") if response.text else [])
-
-    if experience:
-        exp_prompt = f"Generate 3 in-depth interview questions based on these work experiences: {', '.join(experience)}."
-        response = model.generate_content(exp_prompt)
-        questions.extend(response.text.strip().split("\n") if response.text else [])
-
-    return questions
+    return response.text.split("\n") if response and response.text else ["What are your strengths?"]
