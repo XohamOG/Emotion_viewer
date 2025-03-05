@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'question',
     "process",
     "corsheaders",
+    "Reports",
 ]
 
 MIDDLEWARE = [
