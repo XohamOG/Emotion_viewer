@@ -1,221 +1,262 @@
+import numpy as np
+import librosa
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-import torchaudio
-import numpy as np
-from torch.optim import Adam
-from torch.optim.lr_scheduler import ReduceLROnPlateau
+import torch.optim as optim
+from torch.utils.data import Dataset, DataLoader
+from datasets import load_dataset
+import warnings
+warnings.filterwarnings('ignore')
 
-class ImprovedEmotionCNN(nn.Module):
-    def _init_(self):
-        super(ImprovedEmotionCNN, self)._init_()
+class EmotionDataset(Dataset):
+    def __init__(self, dataset_split):
+        self.dataset = dataset_split
+        self.emotion_to_idx = {
+            'ANG': 0, 'CAL': 1, 'DIS': 2, 'FEA': 3,
+            'HAP': 4, 'NEU': 5, 'SAD': 6, 'SUR': 7
+        }
         
-        # 1. Improved Feature Extraction Layers
-        self.conv1 = nn.Sequential(
-            nn.Conv2d(1, 64, kernel_size=3, padding=1),
+    def __len__(self):
+        return len(self.dataset)
+    
+    def __getitem__(self, idx):
+        try:
+            sample = self.dataset[idx]
+            
+            # Get audio data directly from the array field
+            audio_data = sample['file_path']['array']
+            sr = sample['file_path']['sampling_rate']
+            
+            # Ensure audio is the right length (3 seconds)
+            target_length = 3 * sr
+            if len(audio_data) > target_length:
+                audio_data = audio_data[:target_length]
+            else:
+                audio_data = np.pad(audio_data, (0, target_length - len(audio_data)))
+            
+            # Extract MFCC features with fixed size
+            mfccs = librosa.feature.mfcc(
+                y=audio_data, 
+                sr=sr, 
+                n_mfcc=13,
+                n_fft=1024,  # Reduced FFT window size
+                hop_length=256,  # Reduced hop length
+                win_length=1024  # Explicit window length
+            )
+            
+            # Resize MFCCs to fixed dimensions using interpolation
+            target_length = 64  # Reduced target length for time dimension
+            if mfccs.shape[1] > target_length:
+                mfccs = mfccs[:, :target_length]
+            else:
+                pad_width = ((0, 0), (0, target_length - mfccs.shape[1]))
+                mfccs = np.pad(mfccs, pad_width, mode='constant')
+            
+            # Normalize the features
+            mfccs = (mfccs - np.mean(mfccs)) / (np.std(mfccs) + 1e-8)
+            
+            # Convert emotion label to numeric index
+            emotion_idx = self.emotion_to_idx[sample['emotion']]
+            
+            return torch.FloatTensor(mfccs), torch.tensor(emotion_idx, dtype=torch.long)
+            
+        except Exception as e:
+            print(f"Error processing sample {idx}: {str(e)}")
+            # Return a zero tensor and first emotion class as fallback
+            return torch.zeros((13, 64)), torch.tensor(0, dtype=torch.long)
+class EmotionCNN(nn.Module):
+    def __init__(self, num_classes):
+        super(EmotionCNN, self).__init__()
+        
+        # Input shape: (batch_size, 1, 13, 64)
+        self.features = nn.Sequential(
+            # First block
+            nn.Conv2d(1, 32, kernel_size=3, padding=1),
+            nn.BatchNorm2d(32),
+            nn.ReLU(),
+            nn.MaxPool2d(2, 2),  # Output: (32, 6, 32)
+            
+            # Second block
+            nn.Conv2d(32, 64, kernel_size=3, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
-            nn.Dropout2d(0.2)
-        )
-        
-        self.conv2 = nn.Sequential(
+            nn.MaxPool2d(2, 2),  # Output: (64, 3, 16)
+            
+            # Third block
             nn.Conv2d(64, 128, kernel_size=3, padding=1),
             nn.BatchNorm2d(128),
             nn.ReLU(),
-            nn.Dropout2d(0.2)
+            nn.MaxPool2d(2, 2),  # Output: (128, 1, 8)
         )
         
-        # 2. Attention Mechanism
-        self.attention = SelfAttention(128)
+        # Calculate the size of the flattened features
+        self._to_linear = 128 * 1 * 8  # = 1024
         
-        # 3. Residual Connections
-        self.residual_block = ResidualBlock(128)
-        
-        # 4. Enhanced Classification Layers
+        # Classifier
         self.classifier = nn.Sequential(
-            nn.Linear(128 * 8 * 8, 512),
+            nn.Dropout(0.5),
+            nn.Linear(self._to_linear, 512),
             nn.ReLU(),
             nn.Dropout(0.5),
-            nn.Linear(512, 256),
-            nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(256, 8)  # 8 emotion classes
+            nn.Linear(512, num_classes)
         )
-        
+
     def forward(self, x):
-        # Initial convolutions
-        x = self.conv1(x)
-        x = F.max_pool2d(x, 2)
+        # Add channel dimension if necessary
+        if len(x.shape) == 3:
+            x = x.unsqueeze(1)
+            
+        # For debugging - print shapes
+        # print(f"Input shape: {x.shape}")
         
-        x = self.conv2(x)
-        x = F.max_pool2d(x, 2)
+        # Feature extraction
+        x = self.features(x)
+        # print(f"After features: {x.shape}")
         
-        # Apply attention
-        x = self.attention(x)
-        
-        # Residual processing
-        x = self.residual_block(x)
+        # Flatten
+        x = x.view(x.size(0), -1)
+        # print(f"After flatten: {x.shape}")
         
         # Classification
-        x = x.view(x.size(0), -1)
         x = self.classifier(x)
         return x
 
-class SelfAttention(nn.Module):
-    def _init_(self, in_channels):
-        super(SelfAttention, self)._init_()
-        self.query = nn.Conv2d(in_channels, in_channels//8, 1)
-        self.key = nn.Conv2d(in_channels, in_channels//8, 1)
-        self.value = nn.Conv2d(in_channels, in_channels, 1)
-        self.gamma = nn.Parameter(torch.zeros(1))
-        
-    def forward(self, x):
-        batch_size, channels, width, height = x.size()
-        
-        q = self.query(x).view(batch_size, -1, width*height)
-        k = self.key(x).view(batch_size, -1, width*height)
-        v = self.value(x).view(batch_size, -1, width*height)
-        
-        attention = F.softmax(torch.bmm(q.permute(0, 2, 1), k), dim=2)
-        out = torch.bmm(v, attention.permute(0, 2, 1))
-        out = out.view(batch_size, channels, width, height)
-        
-        return self.gamma * out + x
-
-class ResidualBlock(nn.Module):
-    def _init_(self, channels):
-        super(ResidualBlock, self)._init_()
-        self.conv1 = nn.Conv2d(channels, channels, 3, padding=1)
-        self.bn1 = nn.BatchNorm2d(channels)
-        self.conv2 = nn.Conv2d(channels, channels, 3, padding=1)
-        self.bn2 = nn.BatchNorm2d(channels)
-        
-    def forward(self, x):
-        residual = x
-        x = F.relu(self.bn1(self.conv1(x)))
-        x = self.bn2(self.conv2(x))
-        x += residual
-        x = F.relu(x)
-        return x
-
-class AudioDataAugmentation:
-    def _init_(self):
-        self.time_stretch = torchaudio.transforms.TimeStretch()
-        self.pitch_shift = torchaudio.transforms.PitchShift(sample_rate=16000)
-        
-    def augment(self, audio):
-        """Apply various augmentations to audio data"""
-        augmented = []
-        
-        # Original audio
-        augmented.append(audio)
-        
-        # Time stretching
-        stretch_rates = [0.9, 1.1]
-        for rate in stretch_rates:
-            stretched = self.time_stretch(audio, rate)
-            augmented.append(stretched)
-        
-        # Pitch shifting
-        shift_steps = [-2, 2]
-        for steps in shift_steps:
-            shifted = self.pitch_shift(audio, steps)
-            augmented.append(shifted)
-        
-        # Add noise
-        noise_level = 0.005
-        noisy = audio + torch.randn_like(audio) * noise_level
-        augmented.append(noisy)
-        
-        return augmented
-
-def train_improved_model(model, train_loader, val_loader, num_epochs=100):
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+def train_model(model, train_loader, val_loader, criterion, optimizer, num_epochs=10):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using device: {device}")
     model = model.to(device)
-    
-    # 1. Advanced Optimizer
-    optimizer = Adam(model.parameters(), lr=0.001, weight_decay=1e-5)
-    
-    # 2. Learning Rate Scheduler
-    scheduler = ReduceLROnPlateau(
-        optimizer,
-        mode='min',
-        factor=0.5,
-        patience=5,
-        verbose=True
-    )
-    
-    # 3. Class Weights for Imbalanced Data
-    class_weights = calculate_class_weights(train_loader)
-    criterion = nn.CrossEntropyLoss(weight=class_weights.to(device))
     
     best_val_acc = 0.0
     
     for epoch in range(num_epochs):
-        # Training
+        # Training phase
         model.train()
-        train_loss = 0.0
+        running_loss = 0.0
         correct = 0
         total = 0
         
-        for batch_idx, (inputs, targets) in enumerate(train_loader):
-            inputs, targets = inputs.to(device), targets.to(device)
-            
-            # Mixed precision training
-            with torch.cuda.amp.autocast():
+        for batch_idx, (inputs, labels) in enumerate(train_loader):
+            try:
+                inputs, labels = inputs.to(device), labels.to(device)
+                
+                # Print shapes for the first batch of first epoch
+                if epoch == 0 and batch_idx == 0:
+                    print(f"\nDebug shapes:")
+                    x = inputs.unsqueeze(1)
+                    print(f"Initial shape: {x.shape}")
+                    x = model.features(x)
+                    print(f"After features: {x.shape}")
+                    x = x.view(x.size(0), -1)
+                    print(f"After flatten: {x.shape}")
+                
+                optimizer.zero_grad()
                 outputs = model(inputs)
-                loss = criterion(outputs, targets)
+                loss = criterion(outputs, labels)
+                loss.backward()
+                optimizer.step()
+                
+                running_loss += loss.item()
+                _, predicted = outputs.max(1)
+                total += labels.size(0)
+                correct += predicted.eq(labels).sum().item()
+                
+                if batch_idx % 50 == 0:
+                    print(f'Epoch {epoch+1}/{num_epochs} - Batch {batch_idx}/{len(train_loader)} - '
+                          f'Loss: {loss.item():.4f} - Acc: {100.*correct/total:.2f}%')
             
-            optimizer.zero_grad()
-            loss.backward()
-            
-            # Gradient clipping
-            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
-            
-            optimizer.step()
-            
-            train_loss += loss.item()
-            _, predicted = outputs.max(1)
-            total += targets.size(0)
-            correct += predicted.eq(targets).sum().item()
+            except Exception as e:
+                print(f"Error in batch {batch_idx}: {str(e)}")
+                print(f"Input shape: {inputs.shape}")
+                continue
         
-        # Validation
+        train_accuracy = 100. * correct / total if total > 0 else 0
+        
+        # Validation phase
         model.eval()
         val_loss = 0.0
-        val_correct = 0
-        val_total = 0
+        correct = 0
+        total = 0
         
         with torch.no_grad():
-            for inputs, targets in val_loader:
-                inputs, targets = inputs.to(device), targets.to(device)
-                outputs = model(inputs)
-                loss = criterion(outputs, targets)
-                
-                val_loss += loss.item()
-                _, predicted = outputs.max(1)
-                val_total += targets.size(0)
-                val_correct += predicted.eq(targets).sum().item()
+            for inputs, labels in val_loader:
+                try:
+                    inputs, labels = inputs.to(device), labels.to(device)
+                    outputs = model(inputs)
+                    val_loss += criterion(outputs, labels).item()
+                    _, predicted = outputs.max(1)
+                    total += labels.size(0)
+                    correct += predicted.eq(labels).sum().item()
+                except Exception as e:
+                    print(f"Error in validation: {str(e)}")
+                    continue
         
-        # Update learning rate
-        val_acc = 100. * val_correct / val_total
-        scheduler.step(val_loss)
+        val_accuracy = 100. * correct / total if total > 0 else 0
         
         # Save best model
-        if val_acc > best_val_acc:
-            best_val_acc = val_acc
-            torch.save(model.state_dict(), 'best_emotion_model.pth')
+        if val_accuracy > best_val_acc:
+            best_val_acc = val_accuracy
+            torch.save({
+                'epoch': epoch,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'val_acc': val_accuracy,
+            }, 'best_emotion_model.pth')
         
-        print(f'Epoch: {epoch+1}')
-        print(f'Train Acc: {100.*correct/total:.2f}%')
-        print(f'Val Acc: {val_acc:.2f}%')
+        print(f'\nEpoch {epoch + 1}/{num_epochs}')
+        print(f'Training Loss: {running_loss/len(train_loader):.4f}')
+        print(f'Training Accuracy: {train_accuracy:.2f}%')
+        print(f'Validation Loss: {val_loss/len(val_loader):.4f}')
+        print(f'Validation Accuracy: {val_accuracy:.2f}%')
+        print('--------------------')
 
-def calculate_class_weights(dataloader):
-    """Calculate class weights for imbalanced dataset"""
-    class_counts = torch.zeros(8)
-    for _, labels in dataloader:
-        for label in labels:
-            class_counts[label] += 1
+def main():
+    print("Loading dataset...")
+    dataset = load_dataset("stapesai/ssi-speech-emotion-recognition")
     
-    total = class_counts.sum()
-    class_weights = total / (len(class_counts) * class_counts)
-    return class_weights
+    # Create datasets
+    train_dataset = EmotionDataset(dataset['train'])
+    val_dataset = EmotionDataset(dataset['validation'])
+    
+    # Test a single sample
+    first_input, first_label = train_dataset[0]
+    print(f"\nFirst sample shape: {first_input.shape}")
+    print(f"First label: {first_label}")
+    
+    # Create data loaders with smaller batch size
+    train_loader = DataLoader(
+        train_dataset, 
+        batch_size=32, 
+        shuffle=True,
+        num_workers=0,  # No multiprocessing
+        pin_memory=True
+    )
+    
+    val_loader = DataLoader(
+        val_dataset, 
+        batch_size=32,
+        num_workers=0,  # No multiprocessing
+        pin_memory=True
+    )
+    
+    # Initialize model, loss function, and optimizer
+    model = EmotionCNN(num_classes=8)
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    
+    # Train the model
+    print("\nStarting training...")
+    train_model(model, train_loader, val_loader, criterion, optimizer)
+    
+    # Save the final model
+    print("\nSaving final model...")
+    emotion_labels = ['ANG', 'CAL', 'DIS', 'FEA', 'HAP', 'NEU', 'SAD', 'SUR']
+    torch.save({
+        'model_state_dict': model.state_dict(),
+        'emotion_labels': emotion_labels
+    }, 'emotion_model.pth')
+    
+    print("Training completed and model saved!")
+    return model, emotion_labels
+
+if __name__ == "__main__":
+    model, emotion_labels = main()
