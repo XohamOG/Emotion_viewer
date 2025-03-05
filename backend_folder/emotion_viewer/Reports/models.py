@@ -1,6 +1,14 @@
 from django.db import models
 import uuid
-from interview.models import Candidate, Capture  # Adjust this import based on your actual app structure
+from interview.models import Candidate  # Adjust this import based on your actual app structure
+
+class Capture(models.Model):
+    """Stores captured video and audio files"""
+    file = models.FileField(upload_to="captures/")
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Capture at {self.timestamp}"
 
 class InterviewSession(models.Model):
     """Session data for a candidate interview"""
