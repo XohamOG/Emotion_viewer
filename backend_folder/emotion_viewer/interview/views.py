@@ -11,6 +11,9 @@ class JobPositionListCreate(generics.ListCreateAPIView):
 class CandidateListCreate(generics.ListCreateAPIView):
     queryset = Candidate.objects.all()
     serializer_class = CandidateSerializer
+from rest_framework import generics
+from .models import JobPosition, Candidate, Capture
+from .serializers import JobPositionSerializer, CandidateSerializer, CaptureSerializer
 import os
 import cv2
 import numpy as np
@@ -20,13 +23,11 @@ import threading
 from deepface import DeepFace
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-from rest_framework import status, generics
+from rest_framework import status
 from django.conf import settings
-from .models import Capture
-from .serializers import CaptureSerializer
 from torch import nn
 
-# ✅ Define the CNN model structure used during training
+# ✅ Define the CNN model structure (Must match trained model)
 class EmotionCNN(nn.Module):
     def __init__(self, num_classes=8):
         super(EmotionCNN, self).__init__()
@@ -65,15 +66,20 @@ class EmotionCNN(nn.Module):
         x = self.classifier(x)
         return x
 
-# ✅ Load PyTorch model correctly
+# ✅ Load PyTorch Model (Handles missing state_dict keys)
 AUDIO_MODEL_PATH = r"D:\Quasar\Emotion_viewer\backend_folder\AI\emotion_model.pth"
 
 try:
     checkpoint = torch.load(AUDIO_MODEL_PATH, map_location=torch.device("cpu"))
     audio_model = EmotionCNN(num_classes=8)
-    audio_model.load_state_dict(checkpoint["model_state_dict"])
+    
+    if "model_state_dict" in checkpoint:
+        audio_model.load_state_dict(checkpoint["model_state_dict"])
+    else:
+        audio_model.load_state_dict(checkpoint)
+
     audio_model.eval()
-    EMOTION_LABELS = checkpoint["emotion_labels"]
+    EMOTION_LABELS = checkpoint.get("emotion_labels", [])
 except Exception as e:
     print(f"Error loading audio model: {e}")
     audio_model = None
@@ -89,26 +95,35 @@ class CaptureUploadView(generics.CreateAPIView):
     parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request, *args, **kwargs):
+        print("✅ Received POST request to upload a file")
+
         file_serializer = CaptureSerializer(data=request.data)
-        if file_serializer.is_valid():
-            file_serializer.save()
-            file_path = os.path.join(settings.MEDIA_ROOT, file_serializer.data["file"])
-            file_name = file_serializer.data["file"]
+        if not file_serializer.is_valid():
+            print("❌ File Upload Failed:", file_serializer.errors)
+            return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            # Ensure the file exists before processing
-            if not os.path.exists(file_path):
-                return Response({"error": f"File not found: {file_path}"}, status=status.HTTP_400_BAD_REQUEST)
+        file_serializer.save()
+        file_path = os.path.abspath(os.path.join(settings.MEDIA_ROOT, file_serializer.data["file"]))
+        file_name = file_serializer.data["file"]
 
-            # Process Image or Audio
-            if file_name.endswith((".png", ".jpg", ".jpeg")):
-                result = self.process_image(file_path)
-            elif file_name.endswith(".wav"):
-                result = self.process_audio(file_path)
-            else:
-                result = "Unsupported file type"
+        print(f"✅ File Saved at: {file_path}")
 
-            return Response({"message": "File processed", "result": result}, status=status.HTTP_200_OK)
-        return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Ensure file exists before processing
+        if not os.path.exists(file_path):
+            print(f"❌ Error: File not found at {file_path}")
+            return Response({"error": f"File not found: {file_path}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Process Image or Audio
+        if file_name.endswith((".png", ".jpg", ".jpeg")):
+            result = self.process_image(file_path)
+        elif file_name.endswith(".wav"):
+            result = self.process_audio(file_path)
+        else:
+            print("❌ Unsupported file type:", file_name)
+            return Response({"error": "Unsupported file type"}, status=status.HTTP_400_BAD_REQUEST)
+
+        print("✅ Processing Complete:", result)
+        return Response({"message": "File processed", "result": result}, status=status.HTTP_200_OK)
 
     def process_image(self, file_path):
         """Runs DeepFace emotion detection asynchronously."""
@@ -116,12 +131,12 @@ class CaptureUploadView(generics.CreateAPIView):
         if processing_emotion:
             return emotion_result  # Return last processed result if busy
         
-        # ✅ Ensure OpenCV can read the file
         absolute_path = os.path.abspath(file_path)
         print(f"Processing Image: {absolute_path}")
 
         frame = cv2.imread(absolute_path)
         if frame is None:
+            print("❌ OpenCV Error: Cannot read image file")
             return "Error: Unable to read image file"
 
         processing_emotion = True  # Mark processing started
@@ -133,6 +148,7 @@ class CaptureUploadView(generics.CreateAPIView):
                 emotion_result = result[0]["dominant_emotion"]
             except Exception as e:
                 emotion_result = f"Error: {e}"
+                print(f"❌ DeepFace Error: {e}")
             processing_emotion = False  # Mark processing done
 
         threading.Thread(target=analyze_emotion, daemon=True).start()
@@ -168,4 +184,6 @@ class CaptureUploadView(generics.CreateAPIView):
             return EMOTION_LABELS[predicted_emotion] if EMOTION_LABELS else "Unknown"
 
         except Exception as e:
+            print(f"❌ Audio Processing Error: {e}")
             return f"Audio Processing Error: {e}"
+
