@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../styles/Reports.css";
 import {
-  BarChart,
-  Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   Tooltip,
@@ -11,14 +11,13 @@ import {
   PieChart,
   Pie,
   Cell,
-  LineChart,
-  Line,
 } from "recharts";
 
 const HealthReports = () => {
   const [chartData, setChartData] = useState([]);
   const [timelineData, setTimelineData] = useState([]);
   const [healthScore, setHealthScore] = useState(100);
+  const [healthScoreTimeline, setHealthScoreTimeline] = useState([]);
   const audioRef = useRef(null);
 
   const fetchStressData = async () => {
@@ -55,10 +54,12 @@ const HealthReports = () => {
       setChartData([
         { name: "Stressed", count: stressedCount, color: "#D32F2F" },
         { name: "Confident", count: confidentCount, color: "#2E7D32" },
-        { name: "Unknown", count: unknownCount, color: "#FF9800" },
       ]);
       
       setTimelineData(timeline);
+      
+      // Update health score timeline
+      setHealthScoreTimeline(prevTimeline => [...prevTimeline, { time: new Date().toISOString(), score }]);
     } catch (error) {
       console.error("Error fetching stress data:", error);
     }
@@ -70,7 +71,7 @@ const HealthReports = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const COLORS = ["#D32F2F", "#2E7D32", "#FF9800"];
+  const COLORS = ["#D32F2F", "#2E7D32"];
   const healthData = chartData.map(({ name, count }) => ({ name, value: count }));
 
   return (
@@ -78,7 +79,7 @@ const HealthReports = () => {
       <audio ref={audioRef} src="/sounds/venator_class_alarm.mp3" preload="auto" />
 
       <div className="card health-score-card">
-        <h3>Overall Health Score</h3>
+        <h3>Overall Stress Score</h3>
         <ResponsiveContainer width="100%" height={200}>
           <PieChart>
             <Pie data={healthData} dataKey="value" cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5}>
@@ -94,17 +95,13 @@ const HealthReports = () => {
       <div className="card chart-card">
         <h3>Stress Analysis</h3>
         <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={chartData}>
+          <LineChart data={chartData}>
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="count">
-              {chartData.map((entry, index) => (
-                <Cell key={`bar-${index}`} fill={entry.color} />
-              ))}
-            </Bar>
-          </BarChart>
+            <Line type="monotone" dataKey="count" stroke="#8884d8" />
+          </LineChart>
         </ResponsiveContainer>
       </div>
 
@@ -118,6 +115,19 @@ const HealthReports = () => {
             <Legend />
             <Line type="monotone" dataKey="stressed" stroke="#D32F2F" />
             <Line type="monotone" dataKey="confident" stroke="#2E7D32" />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="card health-score-timeline-card">
+        <h3>Overall Health Score Over Time</h3>
+        <ResponsiveContainer width="100%" height={250}>
+          <LineChart data={healthScoreTimeline}>
+            <XAxis dataKey="time" tick={{ fontSize: 10 }} angle={-30} textAnchor="end" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey="score" stroke="#8884d8" />
           </LineChart>
         </ResponsiveContainer>
       </div>
