@@ -27,7 +27,7 @@ const HealthReports = () => {
     try {
       console.log("Fetching stress data...");
       const response = await fetch("/data/emoresults.json?" + new Date().getTime());
- // Cache-busting
+  // Cache-busting
   
       if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
   
@@ -38,7 +38,7 @@ const HealthReports = () => {
       let confidentCount = 0;
       let unknownCount = 0;
   
-      Object.values(stressData).forEach((status) => {
+      Object.values(stressData).forEach(({ status }) => {
         if (status === "Stressed") {
           stressedCount++;
         } else if (status === "Confident") {

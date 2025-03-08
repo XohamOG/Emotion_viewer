@@ -26,9 +26,5 @@
     "vedaneutral.wav": {
         "type": "audio",
         "status": "Confident"
-    },
-    "vedasad.wav": {
-        "type": "audio",
-        "status": "Stressed"
     }
 }
