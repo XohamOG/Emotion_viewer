@@ -14,7 +14,7 @@ from datetime import datetime
 CURRENT_DIR = os.path.dirname(__file__)
 
 # Paths
-FOLDER_PATH = os.path.join(CURRENT_DIR, "../../emotion_viewer/captures")  # Ensure correct folder path
+FOLDER_PATH = os.path.join(CURRENT_DIR, "../../emotion_viewer/media/captures")  # Ensure correct folder path
 OUTPUT_JSON = os.path.join(CURRENT_DIR, "../../../frontend/public/data/emoresults.json")  # Updated path
 
 # Initialize MediaPipe Face Mesh

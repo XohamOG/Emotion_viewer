@@ -38,5 +38,140 @@
         "type": "audio",
         "status": "Stressed",
         "timestamp": "2025-03-08 19:28:27"
+    },
+    "audio.wav": {
+        "type": "audio",
+        "status": "Unknown",
+        "timestamp": "2025-03-08 20:34:33"
+    },
+    "audio_ETAI5Qu.wav": {
+        "type": "audio",
+        "status": "Unknown",
+        "timestamp": "2025-03-08 20:34:34"
+    },
+    "audio_EdWAqye.wav": {
+        "type": "audio",
+        "status": "Unknown",
+        "timestamp": "2025-03-08 20:34:34"
+    },
+    "audio_Kt9qhBG.wav": {
+        "type": "audio",
+        "status": "Unknown",
+        "timestamp": "2025-03-08 20:34:34"
+    },
+    "audio_OofJb6y.wav": {
+        "type": "audio",
+        "status": "Unknown",
+        "timestamp": "2025-03-08 20:34:34"
+    },
+    "audio_YpPeCLW.wav": {
+        "type": "audio",
+        "status": "Unknown",
+        "timestamp": "2025-03-08 20:34:34"
+    },
+    "audio_cPgzKbh.wav": {
+        "type": "audio",
+        "status": "Unknown",
+        "timestamp": "2025-03-08 20:34:34"
+    },
+    "audio_haokfkS.wav": {
+        "type": "audio",
+        "status": "Unknown",
+        "timestamp": "2025-03-08 20:34:34"
+    },
+    "audio_kx8ySz8.wav": {
+        "type": "audio",
+        "status": "Unknown",
+        "timestamp": "2025-03-08 20:34:34"
+    },
+    "audio_pamWJPr.wav": {
+        "type": "audio",
+        "status": "Unknown",
+        "timestamp": "2025-03-08 20:34:34"
+    },
+    "audio_s2Jg4Lj.wav": {
+        "type": "audio",
+        "status": "Unknown",
+        "timestamp": "2025-03-08 20:34:34"
+    },
+    "audio_tEVRJAx.wav": {
+        "type": "audio",
+        "status": "Unknown",
+        "timestamp": "2025-03-08 20:34:34"
+    },
+    "screenshot.png": {
+        "type": "image",
+        "status": "Confident",
+        "timestamp": "2025-03-08 20:34:34"
+    },
+    "screenshot_58Js2c8.png": {
+        "type": "image",
+        "status": "Confident",
+        "timestamp": "2025-03-08 20:34:37"
+    },
+    "screenshot_94yQg2c.png": {
+        "type": "image",
+        "status": "Confident",
+        "timestamp": "2025-03-08 20:34:38"
+    },
+    "screenshot_AqAKPUY.png": {
+        "type": "image",
+        "status": "Confident",
+        "timestamp": "2025-03-08 20:34:39"
+    },
+    "screenshot_Hb2Y5Sd.png": {
+        "type": "image",
+        "status": "Confident",
+        "timestamp": "2025-03-08 20:34:40"
+    },
+    "screenshot_IXSOgZx.png": {
+        "type": "image",
+        "status": "Confident",
+        "timestamp": "2025-03-08 20:34:42"
+    },
+    "screenshot_NdcgkuZ.png": {
+        "type": "image",
+        "status": "Confident",
+        "timestamp": "2025-03-08 20:34:43"
+    },
+    "screenshot_YysUMfd.png": {
+        "type": "image",
+        "status": "Confident",
+        "timestamp": "2025-03-08 20:34:45"
+    },
+    "screenshot_eSBuMmD.png": {
+        "type": "image",
+        "status": "Confident",
+        "timestamp": "2025-03-08 20:34:46"
+    },
+    "screenshot_kscI6Wz.png": {
+        "type": "image",
+        "status": "Confident",
+        "timestamp": "2025-03-08 20:34:47"
+    },
+    "screenshot_m8GQ5GK.png": {
+        "type": "image",
+        "status": "Confident",
+        "timestamp": "2025-03-08 20:34:49"
+    },
+    "screenshot_mtxHEvy.png": {
+        "type": "image",
+        "status": "Confident",
+        "timestamp": "2025-03-08 20:34:50"
+    },
+    "screenshot_ukOc9jZ.png": {
+        "type": "image",
+        "status": "Confident",
+        "timestamp": "2025-03-08 20:34:51"
+    },
+    "screenshot_wzmG3sY.png": {
+        "type": "image",
+        "status": "Confident",
+        "timestamp": "2025-03-08 20:34:53"
+    },
+    "screenshot_x1cCKsv.png": {
+        "type": "image",
+        "status": "Confident",
+        "timestamp": "2025-03-08 20:34:54"
     }
 }
