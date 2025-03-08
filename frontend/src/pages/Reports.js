@@ -1,23 +1,36 @@
-import { useEffect, useState } from "react";
-import io from "socket.io-client";
-import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line
-} from "recharts";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import "../styles/Reports.css";
-
-const socket = io("http://localhost:5000"); // Connect to Flask WebSocket server
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
+} from "recharts";
 
 const HealthReports = () => {
   const [chartData, setChartData] = useState([]);
   const [timelineData, setTimelineData] = useState([]);
   const [healthScore, setHealthScore] = useState(100);
+  const prevDataRef = useRef({ chartData: [], timelineData: [] });
 
-  useEffect(() => {
-    socket.on("update_chart", (data) => {
+  const fetchStressData = useCallback(async () => {
+    try {
+      const response = await fetch(`/data/emoresults.json?timestamp=${new Date().getTime()}`);
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+      const stressData = await response.json();
       let stressedCount = 0, confidentCount = 0, unknownCount = 0;
       let timeline = [];
 
-      Object.entries(data).forEach(([key, { status, type, timestamp }]) => {
+      Object.entries(stressData).forEach(([key, { status, timestamp }]) => {
         if (status === "Stressed") stressedCount++;
         else if (status === "Confident") confidentCount++;
         else unknownCount++;
@@ -28,19 +41,31 @@ const HealthReports = () => {
       const totalFrames = stressedCount + confidentCount + unknownCount;
       const score = totalFrames > 0 ? Math.round((confidentCount / totalFrames) * 100) : 100;
 
-      setChartData([
+      const newChartData = [
         { name: "Stressed", count: stressedCount, color: "#D32F2F" },
         { name: "Confident", count: confidentCount, color: "#2E7D32" },
         { name: "Unknown", count: unknownCount, color: "#FF9800" },
-      ]);
-      setTimelineData(timeline);
-      setHealthScore(score);
-    });
+      ];
 
-    return () => {
-      socket.off("update_chart"); // Cleanup on unmount
-    };
+      if (
+        JSON.stringify(prevDataRef.current.chartData) !== JSON.stringify(newChartData) ||
+        JSON.stringify(prevDataRef.current.timelineData) !== JSON.stringify(timeline)
+      ) {
+        setChartData(newChartData);
+        setTimelineData(timeline);
+        setHealthScore(score);
+        prevDataRef.current = { chartData: newChartData, timelineData: timeline };
+      }
+    } catch (error) {
+      console.error("Error fetching stress data:", error);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchStressData();
+    const interval = setInterval(fetchStressData, 15000);
+    return () => clearInterval(interval);
+  }, [fetchStressData]);
 
   const COLORS = ["#D32F2F", "#2E7D32", "#FF9800"];
   const healthData = chartData.map(({ name, count }) => ({ name, value: count }));
