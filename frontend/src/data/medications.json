@@ -16,6 +16,25 @@
     { "medicationName": "Allergy Medicine", "status": "taken" },
     { "medicationName": "Parac", "status": "missed" },
     { "medicationName": "Parac2", "status": "missed" },
-    { "medicationName": "Parac3", "status": "missed" }
-    
+    { "medicationName": "Parac3", "status": "missed" },
+    { "medicationName": "Omega-3", "status": "missed" },
+    { "medicationName": "Calcium", "status": "missed" },
+    { "medicationName": "Zinc", "status": "missed" },
+    { "medicationName": "Probiotics", "status": "missed" },
+    { "medicationName": "Magnesium", "status": "missed" },
+    { "medicationName": "B12", "status": "missed" },
+    { "medicationName": "Iron Supplements", "status": "missed" },
+    { "medicationName": "Antacids", "status": "missed" },
+    { "medicationName": "Cold Medicine", "status": "missed" },
+    { "medicationName": "Anti-Anxiety Meds", "status": "missed" },
+    { "medicationName": "Flu Shot", "status": "missed" },
+    { "medicationName": "Pain Relievers", "status": "missed" },
+    { "medicationName": "Corticosteroids", "status": "missed" },
+    { "medicationName": "Diabetes Meds", "status": "missed" },
+    { "medicationName": "Heartburn Relief", "status": "missed" },
+    { "medicationName": "Thyroid Meds", "status": "missed" },
+    { "medicationName": "Sleep Aid", "status": "missed" },
+    { "medicationName": "Anti-Allergy Meds", "status": "missed" },
+    { "medicationName": "Antifungal", "status": "taken" },
+    { "medicationName": "Blood Thinners", "status": "taken" }
 ]
