@@ -1,56 +1,73 @@
 import cv2
-import time
-import threading
+import os
+import json
+import numpy as np
 import mediapipe as mp
 from deepface import DeepFace
+
+# Get the directory of the current script
+CURRENT_DIR = os.path.dirname(__file__)
+
+# Paths
+FOLDER_PATH = os.path.join(CURRENT_DIR, "../../emotion_viewer/captures")  # Ensure correct folder path
+OUTPUT_JSON = os.path.join(CURRENT_DIR, "../../../frontend/src/data/emoresults.json")  # Updated path
 
 # Initialize MediaPipe Face Mesh
 mp_face_mesh = mp.solutions.face_mesh
 face_mesh = mp_face_mesh.FaceMesh(refine_landmarks=True)
 
-# Open webcam
-cap = cv2.VideoCapture(0)
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-
-# Variables for threading
-last_capture_time = time.time()
-capture_interval = 5  # Run emotion detection every 5 seconds
-emotion_result = "Detecting..."
-processing_emotion = False  # Flag to check if thread is running
-
-def analyze_emotion(frame):
-    """Runs DeepFace emotion detection in a separate thread."""
-    global emotion_result, processing_emotion
-    processing_emotion = True  # Mark as processing
+# Load existing JSON data if the file exists
+if os.path.exists(OUTPUT_JSON):
     try:
+        with open(OUTPUT_JSON, "r") as f:
+            results_dict = json.load(f)
+    except json.JSONDecodeError:
+        print("Warning: JSON file was corrupted. Creating a new one.")
+        results_dict = {}
+else:
+    results_dict = {}
+
+# Debug: Ensure folder exists
+if not os.path.exists(FOLDER_PATH):
+    print(f"Error: Folder {FOLDER_PATH} does not exist.")
+    exit()
+
+# Process images in the folder
+for img_name in sorted(os.listdir(FOLDER_PATH)):  
+    img_path = os.path.join(FOLDER_PATH, img_name)
+
+    if not os.path.isfile(img_path) or img_name in results_dict:
+        continue  # Skip non-file entries and already processed images
+
+    print(f"Processing {img_name}...")
+
+    frame = cv2.imread(img_path)
+    if frame is None:
+        print(f"Warning: Could not read {img_name}")
+        continue
+
+    # Convert to RGB for MediaPipe
+    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    results = face_mesh.process(rgb_frame)  # Optional processing
+
+    try:
+        # Emotion analysis
         result = DeepFace.analyze(frame, actions=['emotion'], enforce_detection=False)
-        emotion_result = result[0]['dominant_emotion']
+        dominant_emotion = result[0]['dominant_emotion']
+
+        # Determine stress status
+        status = "Stressed" if dominant_emotion in ["fear", "disgust", "sad"] else "Confident"
     except Exception as e:
-        emotion_result = "Error"
-    processing_emotion = False  # Done processing
+        print(f"Error processing {img_name}: {e}")
+        status = "Unknown"
 
-while True:
-    ret, frame = cap.read()
-    if not ret:
-        break
+    # Store result (only new images)
+    results_dict[img_name] = status
 
-    # Check if it's time to analyze emotion
-    current_time = time.time()
-    if current_time - last_capture_time >= capture_interval and not processing_emotion:
-        last_capture_time = current_time  # Reset timer
-        threading.Thread(target=analyze_emotion, args=(frame.copy(),), daemon=True).start()
-
-    # Display emotion result
-    cv2.putText(frame, f"Emotion: {emotion_result}", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-
-    # Show the video feed
-    cv2.imshow("Emotion Detection", frame)
-
-    # Exit when 'q' is pressed
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-# Release resources
-cap.release()
-cv2.destroyAllWindows()
+# Save updated JSON
+try:
+    with open(OUTPUT_JSON, "w") as f:
+        json.dump(results_dict, f, indent=4)
+    print(f"Updated results saved in {OUTPUT_JSON}")
+except Exception as e:
+    print(f"Error saving JSON: {e}")
