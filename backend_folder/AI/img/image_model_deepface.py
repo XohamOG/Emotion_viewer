@@ -8,6 +8,7 @@ import librosa
 import time
 from deepface import DeepFace
 from jd import EmotionCNN
+from datetime import datetime
 
 # Get the directory of the current script
 CURRENT_DIR = os.path.dirname(__file__)
@@ -108,6 +109,8 @@ def process_files():
 
         print(f"Processing {file_name}...")
 
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
         if file_name.lower().endswith(('.jpg', '.jpeg', '.png')):  # Image Processing
             frame = cv2.imread(file_path)
             if frame is None:
@@ -130,7 +133,7 @@ def process_files():
                 status = "Unknown"
 
             # Store result
-            results_dict[file_name] = {"type": "image", "status": status}
+            results_dict[file_name] = {"type": "image", "status": status, "timestamp": timestamp}
 
         elif file_name.lower().endswith(('.wav', '.mp3', '.flac')):  # Audio Processing
             try:
@@ -140,7 +143,7 @@ def process_files():
                 status = "Unknown"
 
             # Store result
-            results_dict[file_name] = {"type": "audio", "status": status}
+            results_dict[file_name] = {"type": "audio", "status": status, "timestamp": timestamp}
 
     # Save updated JSON
     try:
