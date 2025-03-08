@@ -5,7 +5,7 @@ from pathlib import Path
 import cv2
 import mediapipe as mp
 from deepface import DeepFace
-from backend_folder.AI.aud.jd import EmotionCNN  # Assuming you have the CNN model definition in emotion_cnn.py
+from backend_folder.AI.img.jd import EmotionCNN  # Assuming you have the CNN model definition in emotion_cnn.py
 
 class EmotionPredictor:
     def __init__(self, model_path='emotion_model.pth'):

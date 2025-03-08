@@ -5,7 +5,7 @@ from datetime import datetime
 import sounddevice as sd
 import soundfile as sf
 import os
-from jd import EmotionCNN
+from backend_folder.AI.img.jd import EmotionCNN
 
 class EmotionPredictor:
     def __init__(self, model_path='emotion_model.pth'):
