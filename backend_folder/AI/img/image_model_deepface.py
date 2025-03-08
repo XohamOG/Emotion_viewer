@@ -148,7 +148,7 @@ def process_files():
             save_results(results_dict)  # Save JSON after each update
 
         print("⏳ Waiting for new files...")
-        time.sleep(7)  # Sleep before checking again
+        time.sleep(20)  # Sleep before checking again
 
 if __name__ == "__main__":
     process_files()
