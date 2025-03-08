@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import "../styles/Reports.css";
 import {
-  BarChart,
-  Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   Tooltip,
@@ -11,8 +11,6 @@ import {
   PieChart,
   Pie,
   Cell,
-  LineChart,
-  Line,
 } from "recharts";
 
 const HealthReports = () => {
@@ -67,12 +65,13 @@ const HealthReports = () => {
     return () => clearInterval(interval);
   }, [fetchStressData]);
 
-  const COLORS = ["#D32F2F", "#2E7D32", "#FF9800"];
+  const COLORS = ["#D32F2F", "#2E7D32"];
   const healthData = chartData.map(({ name, count }) => ({ name, value: count }));
 
   return (
     <div className="health-reports-container">
       <div className="card health-score-card">
+        <h3>Overall Stress Score</h3>
         <h3>Overall Stress Score</h3>
         <ResponsiveContainer width="100%" height={200}>
           <PieChart>
@@ -89,17 +88,13 @@ const HealthReports = () => {
       <div className="card chart-card">
         <h3>Stress Analysis</h3>
         <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={chartData}>
+          <LineChart data={chartData}>
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="count">
-              {chartData.map((entry, index) => (
-                <Cell key={`bar-${index}`} fill={entry.color} />
-              ))}
-            </Bar>
-          </BarChart>
+            <Line type="monotone" dataKey="count" stroke="#8884d8" />
+          </LineChart>
         </ResponsiveContainer>
       </div>
 
@@ -113,6 +108,19 @@ const HealthReports = () => {
             <Legend />
             <Line type="monotone" dataKey="stressed" stroke="#D32F2F" />
             <Line type="monotone" dataKey="confident" stroke="#2E7D32" />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="card health-score-timeline-card">
+        <h3>Overall Health Score Over Time</h3>
+        <ResponsiveContainer width="100%" height={250}>
+          <LineChart data={healthScoreTimeline}>
+            <XAxis dataKey="time" tick={{ fontSize: 10 }} angle={-30} textAnchor="end" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey="score" stroke="#8884d8" />
           </LineChart>
         </ResponsiveContainer>
       </div>
