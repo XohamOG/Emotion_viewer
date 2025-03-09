@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "../styles/InterviewSession.css";
 import TrackerCandidates from "./TrackerCandidates"; // Import TrackerCandidates
+import ResumeReader from "./ResumeReader"; // Import ResumeReader component
 
 const interviewees = [
   {
@@ -21,7 +22,7 @@ const interviewees = [
     role: "Data Scientist",
     experience: "5 years",
     skills: ["Python", "Machine Learning"],
-    resume: "/resumes/jane_smith.pdf",
+    resume: "/resumes/jane_resume.pdf",
     image: "/images/jane.jpg",
   },
   {
@@ -31,7 +32,7 @@ const interviewees = [
     role: "Product Manager",
     experience: "7 years",
     skills: ["Agile", "Scrum", "UX/UI"],
-    resume: "/resumes/alice_johnson.pdf",
+    resume: "/resumes/alice_resume.pdf",
     image: "/images/alice.jpg",
   },
 ];
@@ -39,36 +40,6 @@ const interviewees = [
 const InterviewSession = () => {
   const { id } = useParams();
   const candidate = interviewees.find((c) => c.id === parseInt(id));
-  const [questions, setQuestions] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (candidate && candidate.resume) {
-      fetchQuestions(candidate.resume);
-    }
-  }, [candidate]);
-
-  const fetchQuestions = async (resumePath) => {
-    setLoading(true);
-    setQuestions(null);
-
-    try {
-      const response = await fetch("http://127.0.0.1:8000/api/process-resume/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ resume_path: resumePath }),
-      });
-
-      if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-
-      const data = await response.json();
-      setQuestions(data);
-    } catch (error) {
-      console.error("Error fetching questions:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="interview-container">
@@ -97,22 +68,11 @@ const InterviewSession = () => {
 
         <div className="interview-questions">
           <h2>📌 Generated Interview Questions</h2>
-          {loading ? <p>Loading questions...</p> : questions ? (
-            ["Simple", "Medium", "Difficult"].map((category) => (
-              <div key={category} className="question-section">
-                <h3>{category} Questions</h3>
-                <ul>
-                  {questions[category]?.length > 0 ? (
-                    questions[category].map((question, index) => (
-                      <li key={index}>{question}</li>
-                    ))
-                  ) : (
-                    <li>No questions available.</li>
-                  )}
-                </ul>
-              </div>
-            ))
-          ) : <p>No questions generated yet.</p>}
+          {candidate && candidate.resume ? (
+            <ResumeReader /> // Use the ResumeReader here to display questions
+          ) : (
+            <p>Resume not available.</p>
+          )}
         </div>
       </div>
 

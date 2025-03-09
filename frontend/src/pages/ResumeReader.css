@@ -1,0 +1,88 @@
+/* Container styles */
+.container {
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+    max-width: 1200px;
+  }
+  
+  /* Title styling */
+  .title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  
+  /* Section for generated questions */
+  .generated-questions {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #4a4a4a;
+    margin-bottom: 1rem;
+  }
+  
+  /* Category title styling */
+  .category-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 1rem;
+  }
+  
+  /* Grid to arrange cards */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+  
+  /* Card styling */
+  .card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Flexbox to center checkbox and question text */
+  .card-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  /* Checkbox style */
+  .checkbox {
+    width: 20px;
+    height: 20px;
+    accent-color: #007bff; /* Blue accent color */
+  }
+  
+  /* Question text style */
+  .question-text {
+    font-size: 1rem;
+    color: #333;
+    line-height: 1.5;
+    margin-left: 0.5rem;
+    flex-grow: 1; /* Ensures the text takes the remaining space */
+  }
+  
+  /* Category wrapper */
+  .category {
+    margin-bottom: 2.5rem;
+  }
+  
+  /* Text for no questions available */
+  p {
+    color: #777;
+    font-size: 1rem;
+    text-align: center;
+  }
+  

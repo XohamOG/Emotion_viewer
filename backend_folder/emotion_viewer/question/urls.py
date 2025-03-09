@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import upload_resume  # Import your view function
+from .views import process_resume  # Import the updated view function
 
 urlpatterns = [
-    path('upload-resume/', upload_resume, name='upload_resume'),  # Correct API endpoint
+    path('upload-resume/', process_resume, name='upload_resume'),  # Updated API endpoint for processing resumes
 ]

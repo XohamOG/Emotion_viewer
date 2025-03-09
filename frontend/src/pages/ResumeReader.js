@@ -1,127 +1,72 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import './ResumeReader.css'; // Import the custom CSS file
 
 const ResumeReader = () => {
-  const [file, setFile] = useState(null);
-  const [uploading, setUploading] = useState(false);
   const [questions, setQuestions] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
-  };
-
-  const handleSubmit = async () => {
-    if (!file) {
-      alert("Please upload a resume first.");
-      return;
-    }
-  
-    setUploading(true);
-    setQuestions(null);
-  
-    const formData = new FormData();
-    formData.append("resume", file);
-  
-    try {
-      const response = await fetch("http://127.0.0.1:8000/api/upload-resume/", {
-        method: "POST",
-        body: formData,
-      });
-  
-      if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-  
-      const text = await response.text(); // Get raw response
-  
-      // 🔥 Remove code block formatting (```json ... ```)
-      const cleanedText = text.replace(/```json|```/g, "").trim();
-  
-      let data;
+  useEffect(() => {
+    // Fetch the JSON data sent by views.py (assuming it's available at a certain endpoint)
+    const fetchQuestions = async () => {
       try {
-        data = JSON.parse(cleanedText); // Parse cleaned JSON
-      } catch (jsonError) {
-        console.error("Invalid JSON response:", cleanedText);
-        throw new Error("Invalid JSON response from API");
+        const response = await fetch("http://127.0.0.1:8000/api/upload-resume/"); // Adjust the endpoint as needed
+        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+        
+        const data = await response.json();
+        console.log("Received JSON data:", data); // Log the received JSON data
+
+        // Parse the 'questions' string into a valid JSON object
+        const parsedQuestions = JSON.parse(data.questions);
+        setQuestions(parsedQuestions); // Set parsed questions into state
+      } catch (error) {
+        console.error("Error fetching questions:", error);
+        alert(`Failed to load questions: ${error.message}`);
+      } finally {
+        setLoading(false);
       }
-  
-      // 🔥 Fix response structure issue
-      if (Array.isArray(data.questions)) {
-        const parsedQuestions = JSON.parse(data.questions.join("")); // Convert array to valid JSON object
-        console.log("Parsed API Response:", parsedQuestions);
-        if (parsedQuestions.Simple || parsedQuestions.Medium || parsedQuestions.Difficult) {
-          setQuestions(parsedQuestions);
-        } else {
-          throw new Error("API response missing expected keys.");
-        }
-      } else {
-        throw new Error("Unexpected API response format.");
-      }
-  
-    } catch (error) {
-      console.error("Error:", error);
-      alert(`Failed to process the resume. Error: ${error.message}`);
-    } finally {
-      setUploading(false);
-    }
-  };      
+    };
+
+    fetchQuestions();
+  }, []); // Fetch data once on mount
 
   return (
-    <div className="container mx-auto p-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">📂 Upload Your Resume</h2>
-      <input type="file" onChange={handleFileChange} accept=".pdf" className="border p-2 mb-4 w-full" />
-      <button
-        onClick={handleSubmit}
-        disabled={uploading}
-        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
-      >
-        {uploading ? "Processing..." : "Submit"}
-      </button>
+    <div className="container">
+      <h2 className="title">📂 Resume Information</h2>
 
-      {questions && <InterviewQuestions questions={questions} />}
-    </div>
-  );
-};
-
-const InterviewQuestions = ({ questions }) => {
-  const [expanded, setExpanded] = useState({
-    Simple: true,
-    Medium: false,
-    Difficult: false,
-  });
-
-  const toggleSection = (section) => {
-    setExpanded({ ...expanded, [section]: !expanded[section] });
-  };
-
-  return (
-    <div className="mt-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">📌 Generated Interview Questions</h2>
-
-      {["Simple", "Medium", "Difficult"].map((category) => (
-        <div key={category} className="mb-4 bg-white shadow-md rounded-lg p-4">
-          <button
-            onClick={() => toggleSection(category)}
-            className="w-full flex justify-between items-center p-3 font-semibold text-lg border-b border-gray-300"
-          >
-            <span>
-              {category === "Simple" ? "🟢" : category === "Medium" ? "🟡" : "🔴"} {category} Questions
-            </span>
-            <span>{expanded[category] ? "▲" : "▼"}</span>
-          </button>
-
-          {expanded[category] && (
-            <ul className="list-disc pl-6 mt-3">
-              {questions[category]?.length > 0 ? (
-                questions[category].map((question, index) => (
-                  <li key={index} className="text-gray-700 p-2 border-b">
-                    {question}
-                  </li>
-                ))
-              ) : (
-                <li className="text-gray-500 italic p-2">No questions available.</li>
-              )}
-            </ul>
+      {loading ? (
+        <p>Loading questions...</p>
+      ) : (
+        <div className="questions-container">
+          <h2 className="generated-questions">📌 Generated Interview Questions</h2>
+          
+          {questions ? (
+            ["Simple", "Medium", "Difficult"].map((category) => (
+              <div key={category} className="category">
+                <h3 className="category-title">{category} Questions</h3>
+                
+                <div className="card-grid">
+                  {Array.isArray(questions[category]) && questions[category].length > 0 ? (
+                    questions[category].map((question, index) => (
+                      <div key={index} className="card">
+                        <div className="card-content">
+                          <input type="checkbox" id={`question-${category}-${index}`} className="checkbox" />
+                          <label htmlFor={`question-${category}-${index}`} className="question-text">
+                            {question}
+                          </label>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p>No questions available for this category.</p>
+                  )}
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>No questions generated yet.</p>
           )}
         </div>
-      ))}
+      )}
     </div>
   );
 };

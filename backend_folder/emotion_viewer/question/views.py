@@ -1,14 +1,11 @@
 import json
 import fitz  # PyMuPDF for extracting text from PDF
 import google.generativeai as genai
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from dotenv import load_dotenv
 import os
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 import re
-from fpdf import FPDF
 
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -17,33 +14,39 @@ genai.configure(api_key=GEMINI_API_KEY)
 
 @csrf_exempt
 def upload_resume(request):
-    """Handles resume upload, extracts structured information, and sends questions to frontend."""
-    if request.method == "POST" and request.FILES.get("resume"):
-        uploaded_file = request.FILES["resume"].read()
+    """Handles resume extraction and generates interview questions based on static resume."""
+    
+    # Static path to the resume file
+    resume_path = r"D:\Projects\Emotion_viewer\backend_folder\emotion_viewer\question\jai_resume.pdf"
+    
+    # Extract text from the PDF at the static path
+    extracted_text = extract_text_from_pdf(resume_path)
+    if not extracted_text:
+        return JsonResponse({"error": "Failed to extract text from resume"}, status=400)
 
-        # Extract text from PDF
-        extracted_text = extract_text_from_pdf(uploaded_file)
-        if not extracted_text:
-            return JsonResponse({"error": "Failed to extract text from resume"}, status=400)
+    # Process text with Gemini AI to extract structured data
+    structured_data = parse_resume_with_gemini(extracted_text)
 
-        # Process text with Gemini AI
-        structured_data = parse_resume_with_gemini(extracted_text)
+    # Generate interview questions based on the extracted data
+    interview_questions = generate_interview_questions(structured_data)
 
-        # Generate interview questions (list)
-        interview_questions = generate_interview_questions(structured_data)
+    # Clean the interview questions response before sending to frontend
+    cleaned_response = clean_response(interview_questions)
 
-        # ✅ Send questions as JSON array (list)
-        return JsonResponse({"questions": interview_questions}, status=200)
+    # ✅ Return the cleaned interview questions as a JSON response
+    return JsonResponse({"questions": cleaned_response}, status=200)
 
-    return JsonResponse({"error": "Invalid request"}, status=400)
-
-
-def extract_text_from_pdf(pdf_bytes):
+def extract_text_from_pdf(pdf_path):
     """Extracts text from a PDF file using PyMuPDF."""
-    pdf_document = fitz.open(stream=pdf_bytes, filetype="pdf")
-    text = "\n".join(page.get_text("text") for page in pdf_document)
+    try:
+        # Open the PDF from the file path
+        pdf_document = fitz.open(pdf_path)
+        text = "\n".join(page.get_text("text") for page in pdf_document)
 
-    return text.strip() if text else None
+        return text.strip() if text else None
+    except Exception as e:
+        print(f"Error extracting text from PDF: {e}")
+        return None
 
 def parse_resume_with_gemini(text):
     """Extracts structured resume data using Gemini API."""
@@ -131,8 +134,16 @@ Example Output:
 Ensure the output strictly follows the JSON format without additional explanations.
 """
 
-
     model = genai.GenerativeModel("gemini-2.0-flash-thinking-exp-01-21")
     response = model.generate_content(prompt)
 
     return response.text.split("\n") if response and response.text else ["What are your strengths?"]
+
+def clean_response(response_list):
+    """Cleans the response text by removing code block markers."""
+    # Convert the list of questions into a single string, then clean the text
+    response_text = "\n".join(response_list)  # Join the list into a string with new lines separating the items
+    cleaned_text = response_text.replace('```json', '').replace('```', '').strip()
+    print(cleaned_text)
+    return cleaned_text
+
