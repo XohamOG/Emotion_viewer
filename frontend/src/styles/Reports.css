@@ -1,70 +1,86 @@
-/* Container with Better Layout */
+/* Better Container Layout */
 .health-reports-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(3, minmax(320px, 1fr));
   gap: 24px;
-  padding: 24px;
-  text-align: center;
-  max-width: 1200px;
+  padding: 32px;
+  max-width: 1400px;
   margin: auto;
+  justify-content: center;
+  justify-items: center;
 }
-
+.fullwcont{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.full-width-card{
+  margin-left: 50px;
+  width: 81%;
+}
 /* Glassmorphism Card Style */
 .card {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  border-radius: 14px;
-  padding: 24px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-6px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2);
 }
-
+.timeline-card{
+  width: 90%;
+}
 /* Health Score Gauge with Animation */
 .health-score-card {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 24px;
+  text-align: center;
 }
+
 .health-score-text {
-  font-size: 2rem;  /* Increase text size */
+  font-size: 2.2rem;
   font-weight: bold;
   color: #2E7D32;
-  margin-top: 10px;
+  margin-top: 12px;
 }
+
 .recharts-text {
-  font-size: 16px !important;  /* Adjust size as needed */
+  font-size: 18px !important;
   font-weight: bold;
 }
 
 /* Circular Progress with Dynamic Gradient */
 .health-score-circle {
-  width: 120px;
-  height: 120px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   background: conic-gradient(var(--score-color) 0% var(--score), #EAEAEA var(--score) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  font-size: 1.8rem;
+  font-size: 2rem;
   position: relative;
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.15);
 }
 
 /* Dynamic Score Color */
 .health-score-circle::before {
   content: "";
   position: absolute;
-  width: 95%;
-  height: 95%;
+  width: 92%;
+  height: 92%;
   background: #EAEAEA;
   border-radius: 50%;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Score Text */
@@ -75,13 +91,49 @@
 
 /* Chart Styling */
 .chart-card {
-  width: 100%;
-  padding: 10px;
+  width: 90%;
+  padding: 12px;
 }
 
 /* Responsive Adjustments */
+@media (max-width: 1024px) {
+  .health-reports-container {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .card {
+    padding: 24px;
+  }
+  .health-score-text {
+    font-size: 2rem;
+  }
+}
+
 @media (max-width: 768px) {
   .health-reports-container {
     grid-template-columns: 1fr;
+    padding: 20px;
+  }
+  .card {
+    padding: 20px;
+  }
+  .health-score-text {
+    font-size: 1.8rem;
+  }
+  .health-score-circle {
+    width: 120px;
+    height: 120px;
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .health-reports-container {
+    padding: 16px;
+  }
+  .health-score-circle {
+    width: 100px;
+    height: 100px;
+    font-size: 1.4rem;
   }
 }
