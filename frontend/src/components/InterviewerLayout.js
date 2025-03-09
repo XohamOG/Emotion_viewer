@@ -1,14 +1,14 @@
 import React from "react";
 import { Outlet } from "react-router-dom"; // Allows nested routing
-import Sidebar from "./Sidebar";
 import Header from "./Header";
 import Chatbot from "./Chatbot";
 import "../styles/Layout.css"; // Assuming you already have this file
+import InterviewerSidebar from "./InterviewerSidebar";
 
-const PatientLayout = () => {
+const InterviewerLayout = () => {
   return (
     <div className="layout">
-      <Sidebar />
+      <InterviewerSidebar />
       <div className="main-content">
         <Header />
         <div className="page-content">
@@ -20,4 +20,4 @@ const PatientLayout = () => {
   );
 };
 
-export default PatientLayout;
+export default InterviewerLayout;

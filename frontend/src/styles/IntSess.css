@@ -1,0 +1,17 @@
+/* Ensure the content is properly aligned next to the sidebar */
+.session-page-content {
+    flex-grow: 1;
+    margin-left: 250px; /* Matches sidebar width */
+    padding: 20px;
+    overflow-x: hidden;
+    background-color: #f8f9fa; /* Light background for readability */
+    min-height: 100vh; /* Ensures full height */
+  }
+  
+  /* Responsive Fix */
+  @media (max-width: 768px) {
+    .page-content {
+      margin-left: 200px; /* Adjust for smaller sidebar */
+    }
+  }
+  

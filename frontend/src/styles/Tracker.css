@@ -9,8 +9,8 @@ body {
 }
 
 .container {
-  max-width: 700px;
-  margin: 40px auto;
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 20px;
   background: #ffffff;
   border-radius: 12px;
@@ -54,6 +54,14 @@ select {
   background: #f9f9f9;
   outline: none;
   box-shadow: inset 0px 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+input[type="file"] {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
 /* Input focus effects */
@@ -141,3 +149,5 @@ video {
 .link-button button:hover {
   background: #1e7e34;
 }
+
+/* Add any additional custom styles here */

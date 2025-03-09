@@ -1,0 +1,164 @@
+/* General Styling */
+.interviewees-list {
+  text-align: center;
+  padding: 40px;
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+  min-height: 100vh;
+}
+
+/* Interviewee Cards */
+.cards-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+/* Individual Card */
+.card {
+  background: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 24px;
+  width: 280px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  border: 3px solid transparent;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  border-image: linear-gradient(135deg, #007bff, #0056b3) 1;
+}
+
+/* Candidate Info */
+.card h3 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.card p {
+  font-size: 16px;
+  color: #555;
+  margin: 6px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* Icons for better clarity */
+.card p::before {
+  content: "•";
+  color: #007bff;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Skills */
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.skill {
+  background: #007bff;
+  color: white;
+  font-size: 14px;
+  padding: 6px 10px;
+  border-radius: 5px;
+}
+
+/* Resume Link */
+.resume-link {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 16px;
+  color: #007bff;
+  font-weight: bold;
+  text-decoration: none;
+  transition: color 0.3s ease-in-out;
+}
+
+.resume-link:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+/* Dropdown & Button Container */
+.dropdown-container {
+  margin-top: 30px;
+}
+
+/* Styled Dropdown */
+select {
+  padding: 14px;
+  width: 280px;
+  border-radius: 8px;
+  border: 2px solid #007bff;
+  background: white;
+  font-size: 18px;
+  color: #333;
+  outline: none;
+  transition: 0.3s;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+select:hover,
+select:focus {
+  border-color: #0056b3;
+}
+
+/* Start Interview Button */
+.start-button {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 14px 22px;
+  font-size: 18px;
+  font-weight: bold;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+}
+
+.start-button:hover {
+  background: linear-gradient(135deg, #0056b3, #004099);
+  box-shadow: 0 8px 20px rgba(0, 123, 255, 0.6);
+  transform: scale(1.05);
+}
+
+.start-button.disabled {
+  background: gray;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .cards-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  select {
+    width: 100%;
+  }
+}

@@ -3,12 +3,13 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LandingPage from "./components/LandingPage";
 import InterviewerLayout from "./components/InterviewerLayout";
 import IntervieweeLayout from "./components/IntervieweeLayout";
-import Home from "./pages/Home";
+import InterviewSessionLayout from "./components/InterviewSessionLayout";
+import IntervieweesList from "./pages/IntervieweesList";
+import InterviewSession from "./pages/InterviewSession";
 import ResumeReader from "./pages/ResumeReader";
-import Reports from "./pages/Reports";
-import Support from "./pages/Support";
 import Tracker from "./pages/Tracker";
-import TrackerCandidates from "./pages/TrackerCandidates";
+import Reports from "./pages/Reports";
+import Home from "./pages/Home";
 
 function App() {
   return (
@@ -17,25 +18,26 @@ function App() {
         {/* Landing Page */}
         <Route path="/" element={<LandingPage />} />
 
-        {/* Interviwer Layout with Nested Routes */}
+        {/* Interviewer Layout */}
         <Route path="/interviewer" element={<InterviewerLayout />}>
-          <Route index element={<Home />} />
           <Route path="home" element={<Home />} />
-          <Route path="resume" element={<ResumeReader />} />
-          <Route path="reports" element={<Reports />} />
-          <Route path="support" element={<Support />} />
-          <Route path="interview" element={<Tracker />} />
-          <Route path="candidates" element={<TrackerCandidates />} />
+          <Route path="interview" element={<IntervieweesList />} />
+          <Route path="/interviewer/interview/:id" element={<InterviewSession />} />
+          <Route path="/interviewer/interview/:id/reports" element={<Reports />} />
 
+          {/* <Route path="interviewees/:id" element={<InterviewSession />} /> */}
         </Route>
 
-        {/* Doctor Layout with its own pages (modify as needed) */}
+      {/* Interview Session Layout */}
+      {/* Interview Session - Uses New Layout */}
+      <Route path="/interviewer/interview/:id" element={<InterviewSessionLayout />}>
+          <Route index element={<InterviewSession />} /> 
+        </Route>
+
+        {/* Interviewee Routes */}
         <Route path="/interviewee" element={<IntervieweeLayout />}>
-        <Route path="resume" element={<ResumeReader />} />
-          <Route path="reports" element={<Reports />} />
-          <Route path="support" element={<Support />} />
+          <Route path="resume" element={<ResumeReader />} />
           <Route path="interview" element={<Tracker />} />
-          <Route path="candidates" element={<TrackerCandidates />} />
         </Route>
       </Routes>
     </Router>
