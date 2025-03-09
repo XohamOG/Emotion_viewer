@@ -7,6 +7,7 @@ import InterviewSessionLayout from "./components/InterviewSessionLayout";
 import IntervieweesList from "./pages/IntervieweesList";
 import InterviewSession from "./pages/InterviewSession";
 import ResumeReader from "./pages/ResumeReader";
+import IntervieweeResume from "./pages/IntervieweeResume";
 import Tracker from "./pages/Tracker";
 import Reports from "./pages/Reports";
 import Home from "./pages/Home";
@@ -36,7 +37,7 @@ function App() {
 
         {/* Interviewee Routes */}
         <Route path="/interviewee" element={<IntervieweeLayout />}>
-          <Route path="resume" element={<ResumeReader />} />
+          <Route path="resume" element={<IntervieweeResume />} />
           <Route path="interview" element={<Tracker />} />
         </Route>
       </Routes>

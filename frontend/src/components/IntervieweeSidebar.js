@@ -38,7 +38,7 @@ const InterviewerSidebar = () => {
           </Link>
         </li>
         <li>
-          <Link to="/interview-sessions">
+          <Link to="resume">
             <FaFileAlt className="icon" /> Resume Uploader
           </Link>
         </li>

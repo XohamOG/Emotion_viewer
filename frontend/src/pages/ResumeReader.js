@@ -37,13 +37,11 @@ const ResumeReader = () => {
         <p>Loading questions...</p>
       ) : (
         <div className="questions-container">
-          <h2 className="generated-questions">📌 Generated Interview Questions</h2>
-          
           {questions ? (
             ["Simple", "Medium", "Difficult"].map((category) => (
-              <div key={category} className="category">
+              <div key={category} className={`category ${category.toLowerCase()}`}>
                 <h3 className="category-title">{category} Questions</h3>
-                
+
                 <div className="card-grid">
                   {Array.isArray(questions[category]) && questions[category].length > 0 ? (
                     questions[category].map((question, index) => (
