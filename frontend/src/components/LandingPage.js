@@ -18,7 +18,7 @@ const LandingPage = () => {
         <h1>Welcome to Emotion View</h1>
         <p>Select your role:</p>
         <div className="buttons">
-          <button className="btn patient" onClick={() => navigate("/interviewer")}>
+          <button className="btn patient" onClick={() => navigate("/interviewer/home")}>
             Interviewer
           </button>
           {/* <button className="btn caretaker" onClick={() => navigate("/caretaker")}>

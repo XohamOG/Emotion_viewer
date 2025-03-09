@@ -66,7 +66,7 @@ const IntervieweesList = () => {
           value={selectedInterviewee}
           onChange={(e) => setSelectedInterviewee(e.target.value)}
         >
-          <option value="" disabled>Select an interviewee</option>
+          <option value="" disabled>Select an Interviewee</option>
           {interviewees.map((interviewee) => (
             <option key={interviewee.id} value={interviewee.id}>
               {interviewee.name} ({interviewee.role})

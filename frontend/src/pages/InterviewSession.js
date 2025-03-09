@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import "../styles/InterviewSession.css";
+import TrackerCandidates from "./TrackerCandidates"; // Import TrackerCandidates
 
 const interviewees = [
   {
@@ -130,9 +131,7 @@ const InterviewSession = () => {
         </div>
 
         <div className="interview-footer">
-          <Link to="/interviewer/candidates">
-            <button className="interview-start-button">Start Interview</button>
-          </Link>
+          <TrackerCandidates /> {/* Only the Start Interview button will show now */}
         </div>
       </div>
     </div>

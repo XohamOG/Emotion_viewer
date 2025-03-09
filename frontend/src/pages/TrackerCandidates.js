@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import "../styles/TrackerCandid.css";
 
 const TrackerCandidates = () => {
-  const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [screenStream, setScreenStream] = useState(null);
   const videoRef = useRef(null);
   const mediaRecorderRef = useRef(null);
@@ -10,11 +9,7 @@ const TrackerCandidates = () => {
   const captureIntervalRef = useRef(null);
 
   const startInterview = async () => {
-    if (!selectedCandidate) {
-      alert("Please select a candidate before starting the interview.");
-      return;
-    }
-    alert(`Starting interview for ${selectedCandidate}`);
+    alert("Starting interview and screen sharing...");
     await startScreenShare();
   };
 
@@ -112,23 +107,15 @@ const TrackerCandidates = () => {
   };
 
   return (
-    <>
-      <div className="tracker-container">
-        <h3>Choose Candidate</h3>
-        <div className="choose-container">
-          <select value={selectedCandidate || ""} onChange={(e) => setSelectedCandidate(e.target.value)}>
-            <option value="">Select a Candidate</option>
-            <option value="1">John Doe</option>
-            <option value="2">Jane Smith</option>
-          </select>
-          <button className="start-button" onClick={startInterview} disabled={!selectedCandidate}>
-            Start Interview & Screen Share
-          </button>
-        </div>
+    <div className="tracker-container">
+      <div className="start-interview-container">
+        <button className="start-button" onClick={startInterview}>
+          Start Interview & Screen Share
+        </button>
       </div>
 
       <video ref={videoRef} autoPlay style={{ display: "none" }}></video>
-    </>
+    </div>
   );
 };
 

@@ -37,7 +37,9 @@
   transform: scale(1.05);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
   border-image: linear-gradient(135deg, #007bff, #0056b3) 1;
+  border-radius: 12px; /* Ensure border radius applies on hover */
 }
+
 
 /* Candidate Info */
 .card h3 {
@@ -83,6 +85,7 @@
 }
 
 /* Resume Link */
+/* Resume Link */
 .resume-link {
   display: inline-block;
   margin-top: 14px;
@@ -95,7 +98,7 @@
 
 .resume-link:hover {
   color: #0056b3;
-  text-decoration: underline;
+  text-decoration: none; /* Remove underline on hover */
 }
 
 /* Dropdown & Button Container */
